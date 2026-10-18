@@ -1,0 +1,57 @@
+To determine the optimal clock energy bandwidth \Delta E_C^* that minimizes total quantum 
+decoherence, we must balance the two competing, opposing scaling regimes established in our 
+framework: 
+1.​ Intrinsic Lindblad Dephasing (\Gamma_{\text{Lindblad}}): Scales inversely with clock 
+energy spread. A sharper, more precise clock (larger \Delta E_C) has less temporal 
+uncertainty \sigma_t, reducing internal energy dephasing: 
+\Gamma_{\text{Lindblad}}(\Delta E_C) = \frac{(E_j - E_k)^2}{2\hbar \Delta E_C} = 
+\frac{a}{\Delta E_C}, \qquad a := \frac{(E_j - E_k)^2}{2\hbar}. 
+2.​ Gravitational Superposition Decoherence (\Gamma_{\text{grav}}): Scales directly 
+with clock energy spread. By Einstein mass-energy equivalence (\Delta M = \Delta E_C / 
+c^2), a sharper clock possesses a broader mass uncertainty, making it more vulnerable to 
+phase dispersion when delocalized across a gravitational potential gradient (Theorem 5): 
+\Gamma_{\text{grav}}(\Delta E_C) = \frac{\vert{}\Delta N_{12}\vert{}}{\sqrt{2}\,\hbar} \Delta 
+E_C = b \, \Delta E_C, \qquad b := \frac{\vert{}\Delta N_{12}\vert{}}{\sqrt{2}\,\hbar}, where 
+\Delta N_{12} = \sqrt{1 - r_s/r_2} - \sqrt{1 - r_s/r_1} is the Schwarzschild redshift 
+differential between the two spatial superposition arms. 
+Derivation of the Optimal Bandwidth \Delta E_C^* 
+The total decoherence rate acting on the system-clock composite in curved spacetime is the 
+sum of both independent channels: 
+\Gamma_{\text{total}}(\Delta E_C) = \Gamma_{\text{Lindblad}}(\Delta E_C) + 
+\Gamma_{\text{grav}}(\Delta E_C) = \frac{a}{\Delta E_C} + b \, \Delta E_C. 
+To find the optimal clock bandwidth \Delta E_C^* that minimizes total decoherence, we take the 
+first derivative of \Gamma_{\text{total}} with respect to \Delta E_C and set it to zero: 
+\frac{d\Gamma_{\text{total}}}{d(\Delta E_C)} = -\frac{a}{(\Delta E_C)^2} + b = 0. 
+Solving for (\Delta E_C^*)^2: 
+(\Delta E_C^*)^2 = \frac{a}{b} \implies \Delta E_C^* = \sqrt{\frac{a}{b}}. 
+Taking the second derivative: 
+\frac{d^2\Gamma_{\text{total}}}{d(\Delta E_C)^2} = \frac{2a}{(\Delta E_C)^3} > 0 \quad 
+(\text{since } a, b > 0), 
+confirms that \Delta E_C^* yields a strict global minimum. 
+Substituting the explicit expressions for a and b yields the exact optimal clock energy 
+bandwidth: 
+\boxed{ \Delta E_C^* = \sqrt{\frac{(E_j - E_k)^2 / (2\hbar)}{\vert{}\Delta N_{12}\vert{} / 
+(\sqrt{2}\hbar)}} = \frac{\vert{}E_j - E_k\vert{}}{\sqrt[4]{2} \sqrt{\vert{}\Delta N_{12}\vert{}}}. } 
+Physical Interpretation and Curved Spacetime Implications 
+1.​ The Clock-Gravity Uncertainty Trade-Off: 
+○​ If the experimentalist chooses a broad, low-energy-spread clock (\Delta E_C \ll 
+\Delta E_C^*), internal Lindblad dephasing dominates (\Gamma_{\text{Lindblad}} \to 
+\infty), destroying coherence via internal clock blur. 
+○​ If the experimentalist builds an ultra-sharp, high-energy-spread clock (\Delta 
+E_C \gg \Delta E_C^*), gravitational curvature decoherence dominates 
+(\Gamma_{\text{grav}} \to \infty), as mass-energy fluctuations couple violently to the 
+spacetime metric gradient. 
+2.​ Dependence on Spacetime Curvature (\vert{}\Delta N_{12}\vert{}): 
+
+○​ In flat spacetime or in the absence of spatial delocalization (\vert{}\Delta 
+N_{12}\vert{} \to 0), b \to 0, pushing the optimal bandwidth to infinity (\Delta E_C^* 
+\to \infty), meaning one should make the clock as sharp as possible. 
+○​ In regions of intense spacetime curvature or large spatial separation (e.g., near a 
+black hole horizon where \vert{}\Delta N_{12}\vert{} is large), the denominator 
+grows, lowering \Delta E_C^*. This forces the optimal clock to be softer and broader 
+to prevent gravitational decoherence from tearing the superposition apart. 
+3.​ Minimum Achievable Decoherence Rate: Substituting \Delta E_C^* back into Eq. (74) 
+gives the fundamental minimum decoherence rate achievable by any quantum clock 
+operating across that gravitational gradient: \Gamma_{\text{total}}^{\min} = 2 \sqrt{a b} = 2 
+\sqrt{\frac{(E_j - E_k)^2}{2\hbar} \cdot \frac{\vert{}\Delta N_{12}\vert{}}{\sqrt{2}\hbar}} = 
+\sqrt{\sqrt{2}} \, \frac{\vert{}E_j - E_k\vert{} \, \vert{}\Delta N_{12}\vert{}}{\hbar}. 

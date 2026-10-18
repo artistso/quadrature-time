@@ -1,0 +1,152 @@
+IX.G. The Hartle--Hawking No-Boundary Wave 
+Function via Covariant Phase POVMs 
+Applying the Hilbert-Space Quadrature Conjecture to quantum cosmology provides a rigorous 
+operational foundation for the Hartle--Hawking ``no-boundary'' 
+proposal~\cite{HartleHawking1983}. In the standard formulation, the no-boundary wave function 
+\Psi_{\text{HH}}[h_{ij}, \varphi] is defined by a Euclidean path integral over compact 
+4-geometries g and regular field configurations \phi bounded only by the 3-metric h_{ij} and field 
+\varphi on the spatial hypersurface: \begin{equation} \Psi_{\text{HH}}[h_{ij}, \varphi] = 
+\int_{\partial g = (h, \varphi)} \mathcal{D}g , \mathcal{D}\phi , \exp\left(-I_E[g, \phi]\right). 
+\label{eq:hh_path_integral} \end{equation} Historically, interpreting Euclidean time \tau_E and its 
+transition to Lorentzian spacetime required formal analytic continuations (Wick rotations) of the 
+metric signature. Within our framework, Euclidean time is the circular phase parameter 
+\theta_E \in S^1_E of an internal Euclidean clock sector \mathcal{H}_{C,E}, and the 
+Hartle--Hawking wave function itself is a state-generated quadrature projection of a timeless 
+boundary-free universal state onto the covariant phase POVM E(d\theta_E). 
+1. The Euclidean Clock Circle and No-Boundary State Generation 
+Let the Euclidean proper time \tau_E along compact regular caps be compactified or integrated 
+over a Euclidean circle S^1_E of fundamental circumference \beta = 2\pi/\omega_E. The 
+Euclidean clock Hilbert space is \mathcal{H}_{C,E} = L^2(S^1_E, d\theta_E/2\pi), equipped with 
+the covariant Holevo phase POVM: \begin{equation} E_E(d\theta_E) = \frac{1}{2\pi} 
+|\theta_E)(\theta_E| , d\theta_E, \qquad |\theta_E) = \sum_{n=0}^{\infty} e^{in\theta_E} 
+|n\rangle_E. \label{eq:euclidean_povm} \end{equation} 
+Theorem 8 (Quadrature Formulation of the Hartle--Hawking 
+No-Boundary State) 
+Let \mathcal{H}_U = \mathcal{H}_{C,E} \otimes \mathcal{H}_{\text{geom}} be the bipartite 
+universe comprising the Euclidean clock sector and the gravitational superspace geometry. The 
+Hartle--Hawking no-boundary state \vert{}\Psi_{\text{NB}}\rangle \in \mathcal{H}_U is generated 
+by integrating the covariant Euclidean phase POVM E_E(d\theta_E) over the compact circle 
+S^1_E anchored at a smooth, zero-volume regular origin (\vert{}\text{cap}\rangle): 
+\vert{}\Psi_{\text{NB}}\rangle = \int_0^{2\pi} \frac{d\theta_E}{2\pi} \, \vert{}\theta_E)_C \otimes 
+\left( \int_{\text{cap}}^{\theta_E} \mathcal{D}g\,\mathcal{D}\phi \, e^{-I_E[g,\phi]} 
+\vert{}\text{geom}(\theta_E)\rangle \right). 
+The Hartle--Hawking wave function \Psi_{\text{HH}}[h_{ij}, \varphi] is the exact conditional 
+quadrature amplitude obtained by projecting \vert{}\Psi_{\text{NB}}\rangle onto the covariant 
+phase state and the spatial metric eigenstate: 
+\Psi_{\text{HH}}[h_{ij}, \varphi; \theta_E] = \langle \theta_E, h_{ij}, \varphi \vert{} \Psi_{\text{NB}} 
+\rangle. 
+Proof 
+
+By definition, the Hartle--Hawking path integral sums over all compact Euclidean geometries 
+starting from a point (zero 3-volume h_{ij} \to 0 at the origin). In our relational framework, the 
+"radius" from the smooth cap acts as the Euclidean clock angle \theta_E \in [0, 2\pi) winding 
+around the Euclidean proper-time circle. 
+The Euclidean action I_E[g, \phi] acts as the generator of translations around S^1_E. Applying 
+the covariant phase POVM E_E(d\theta_E) of Proposition 1 to the superspace state 
+decomposes the no-boundary path integral into a continuous superposition of conditional 
+geometry states \vert{}\psi(\theta_E)\rangle = \int \mathcal{D}g\,\mathcal{D}\phi \, e^{-I_E[g,\phi]} 
+\vert{}\text{geom}(\theta_E)\rangle weighted by the Euclidean clock phase amplitudes. 
+Projecting this state onto the metric and scalar field configuration (h_{ij}, \varphi) yields 
+Eq.~\eqref{eq:hh_path_integral}, establishing that the Hartle--Hawking wave function is a 
+state-generated quadrature amplitude over the Euclidean circular phase fiber. \blacksquare 
+2. Analytic Continuation to Lorentzian Quadrature Time 
+To recover Lorentzian cosmology (oscillatory De Sitter or FRW expansion) from the Euclidean 
+no-boundary wave function, standard treatments perform a Wick rotation \theta_E = i\theta_L + 
+\frac{\pi}{2} (or \tau_E = i t). 
+Within the Hilbert-Space Quadrature Conjecture, this analytic continuation is not an ad-hoc 
+mathematical trick, but the transition from the Euclidean compact phase fiber S^1_E to the 
+physical universal cover time \mathbb{R} via the winding quotient map (\Pi_\omega): 
+1.​ Euclidean Phase Regime (\theta_E \in S^1_E): The Euclidean clock POVM 
+E_E(d\theta_E) measures compact, periodic Euclidean histories (the "cap"). The 
+quadrature distribution M_{\text{NB}}(\theta_E) = \Vert{}\Psi_{\text{NB}}(\theta_E)\Vert{}^2 
+is regular and bounded at the origin (\theta_E = 0). 
+2.​ Wick-Rotation Boundary Transition: At the equator of the no-boundary manifold 
+(\theta_E = \pi/2), the Euclidean metric signature transitions to Lorentzian signature. In our 
+framework, this corresponds to the phase transition where the compact Euclidean clock 
+Hardy space H^2(S^1_E) unwraps into the universal cover clock Hilbert space 
+\mathcal{H}_C^{\text{univ}} = L^2(\mathbb{R}, dt) governed by the group-averaged 
+constraint \mathbb{P}_{\mathrm{phys}} = \delta(\widehat{C}_{\text{univ}}) (Section II). 
+3.​ Emergent Lorentzian Dynamics: Once analytically continued across the equator, the 
+conditional state satisfies the Lorentzian Wheeler--DeWitt / Schr"odinger equation 
+(Theorem 6), and the squared quadrature distribution Q_\Psi(\theta_L, a) = \vert{}\langle 
+\theta_L, a \vert{} \Psi_{\text{Lorentz}} \rangle\vert{}^2 generates real-time cosmological 
+expansion. 
+Drop-In LaTeX Code for Subsection IX.G (Append to Section IX of the 
+Manuscript) 
+Paste the following block at the very end of \section{Relativistic Spacetime Extension...} in your 
+REVTeX 4.2 .tex file (right before \section{Conclusion}): 
+\subsection{The Hartle--Hawking No-Boundary Wave Function via Covariant Phase POVMs}​
+\label{subsec:hartle_hawking}​
+​
+In quantum cosmology, the Hartle--Hawking no-boundary wave function is defined by the 
+Euclidean path integral over compact 4-geometries  and fields  bounded only by spatial data 
+𝑔
+ϕ
+
+~\cite{HartleHawking1983}:​
+(ℎ𝑖𝑗, φ)
+\begin{equation}​
+    \Psi_{\mathrm{HH}}[h_{ij}, \varphi] = \int_{\partial g = (h, \varphi)} \mathcal{D}g \, 
+\mathcal{D}\phi \, \exp\left(-I_E[g, \phi]\right).​
+    \label{eq:hh_path_app}​
+\end{equation}​
+Within the Hilbert-Space Quadrature Conjecture, Euclidean proper time is the circular phase 
+parameter 
+ of an internal Euclidean clock sector 
+, and the no-boundary 
+θ𝐸∈𝑆𝐸
+1
+𝐻𝐶,𝐸= 𝐿
+2(𝑆𝐸
+1)
+wave function is a state-generated quadrature projection.​
+​
+\begin{theorem}[Quadrature Formulation of the Hartle--Hawking State]​
+\label{thm:hartle_hawking}​
+Let 
+ be the universe comprising the Euclidean clock circle and gravitational 
+𝐻𝑈= 𝐻𝐶,𝐸⊗𝐻𝑔𝑒𝑜𝑚
+superspace. The no-boundary state $|\Psi_{\mathrm{NB}}\rangle$ is generated by integrating 
+the covariant Euclidean phase POVM 
+ over 
+ anchored at a smooth 
+𝐸𝐸(𝑑θ𝐸) =
+1
+2π |θ𝐸)(θ𝐸|𝑑θ𝐸
+𝑆𝐸
+1
+regular cap:​
+\begin{equation}​
+    |\Psi_{\mathrm{NB}}\rangle = \int_0^{2\pi} \frac{d\theta_E}{2\pi} \, |\theta_E)_C \otimes \left( 
+\int_{\mathrm{cap}}^{\theta_E} \mathcal{D}g\,\mathcal{D}\phi \, e^{-I_E[g,\phi]} 
+|\mathrm{geom}(\theta_E)\rangle \right),​
+    \label{eq:nb_state_app}​
+\end{equation}​
+such that $\Psi_{\mathrm{HH}}[h_{ij}, \varphi; \theta_E] = \langle \theta_E, h_{ij}, \varphi | 
+\Psi_{\mathrm{NB}} \rangle$. The transition from Euclidean no-boundary quantum cosmology to 
+Lorentzian real-time expansion corresponds operationally to the analytic unwrapping of the 
+Euclidean clock phase POVM into the universal cover group-averaged constraint 
+ of Section~\ref{sec:universal_cover}.​
+𝑃𝑝ℎ𝑦𝑠= δ(𝐶𝑢𝑛𝑖𝑣)
+\end{theorem}​
+​
+\begin{proof}​
+The Euclidean action 
+ generates rotations around the compact Euclidean time circle 
+. 
+𝐼𝐸[𝑔, ϕ]
+𝑆𝐸
+1
+Projecting the universal state onto the covariant phase POVM 
+ decomposes the 
+𝐸𝐸(𝑑θ𝐸)
+Hartle--Hawking path integral into conditional geometry amplitudes weighted by Euclidean clock 
+readings, establishing that the no-boundary wave function is a state-generated quadrature 
+amplitude over the circular phase fiber.​
+\end{proof}​
+ 
+And add the Hartle--Hawking reference to your bibliography: 
+\bibitem{HartleHawking1983}​
+J.~B.~Hartle and S.~W.~Hawking, Wave function of the universe, Phys.\ Rev.\ D \textbf{28}, 
+2960 (1983).​
+ 

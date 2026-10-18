@@ -1,0 +1,2365 @@
+\documentclass[aps,prd,onecolumn,notitlepage,10pt,amsmath,amssymb,amsf
+onts,nofootinbib]{revtex4-2}​
+​
+%=====================================================================
+=========​
+% PACKAGES & MACROS​
+%=====================================================================
+=========​
+\usepackage{bm}​
+\usepackage{mathtools}​
+\usepackage{amsthm}​
+\usepackage{hyperref}​
+\usepackage{listings}​
+\usepackage{xcolor}​
+​
+\hypersetup{​
+    colorlinks=true,​
+    linkcolor=blue!70!black,​
+    citecolor=blue!70!black,​
+    urlcolor=blue!70!black​
+}​
+​
+% Theorem Environments​
+\newtheorem{theorem}{Theorem}​
+\newtheorem{proposition}{Proposition}​
+\newtheorem{conjecture}{Conjecture}​
+\newtheorem{corollary}{Corollary}​
+\theoremstyle{definition}​
+\newtheorem{definition}{Definition}​
+\theoremstyle{remark}​
+\newtheorem{remark}{Remark}​
+​
+% Python Code Listing Configuration​
+\definecolor{codebg}{rgb}{0.97,0.97,0.98}​
+\definecolor{codeframe}{rgb}{0.82,0.82,0.86}​
+\definecolor{codekw}{rgb}{0.0,0.25,0.65}​
+\definecolor{codecomment}{rgb}{0.25,0.50,0.35}​
+\definecolor{codestr}{rgb}{0.65,0.15,0.15}​
+​
+\lstdefinestyle{pythonstyle}{​
+    language=Python,​
+    backgroundcolor=\color{codebg},​
+    frame=single,​
+    rulecolor=\color{codeframe},​
+    basicstyle=\ttfamily\footnotesize,​
+    keywordstyle=\color{codekw}\bfseries,​
+    commentstyle=\color{codecomment}\itshape,​
+    stringstyle=\color{codestr},​
+
+    numbers=left,​
+    numberstyle=\tiny\color{gray},​
+    stepnumber=1,​
+    numbersep=6pt,​
+    tabsize=4,​
+    breaklines=true,​
+    breakatwhitespace=false,​
+    showstringspaces=false,​
+    captionpos=b​
+}​
+​
+\begin{document}​
+​
+%=====================================================================
+=========​
+% TITLE & METADATA​
+%=====================================================================
+=========​
+\title{The Hilbert-Space Quadrature Conjecture:\\​
+Time as the Wave-Function-Generated Quadrature of Circular Phase}​
+​
+\author{Steven Michael Allen Owens}​
+\affiliation{Independent Researcher}​
+​
+\date{October 18, 2026}​
+​
+%=====================================================================
+=========​
+% ABSTRACT​
+%=====================================================================
+=========​
+\begin{abstract}​
+We formulate and establish the conditional mathematical consistency of 
+the \emph{Hilbert-Space Quadrature Conjecture}, which proposes that 
+physical time is not a primitive external background parameter, but an 
+emergent, state-generated observable arising from the quadratic 
+mapping (``squaring'') of the intrinsic circular 
+ phase structure 
+𝑈(1)
+of Hilbert space. Let 
+ be the bipartite Hilbert space of a 
+𝐻𝑈= 𝐻𝐶⊗𝐻𝑆
+closed quantum universe containing a quantum clock 
+ and system 
+. To 
+𝐻𝐶
+𝐻𝑆
+avoid spectral commensurability singularities, exact relational 
+dynamics is formulated on the universal cover 
+ via a 
+𝐻𝐶
+𝑢𝑛𝑖𝑣= 𝐿
+2(𝑅, 𝑑𝑡)
+Gel'fand triple 
+ and refined algebraic group averaging 
+Φ ⊂𝐻𝑈⊂Φ
+×
+. We prove that a continuous Bloch--Floquet winding quotient 
+𝑃𝑝ℎ𝑦𝑠= δ(𝐶)
+map 
+ pushes the universal cover constraint forward to the 
+Πω: 𝐿
+2(𝑅) →𝐿
+2(𝑆
+1)
+
+compact clock circle 
+, where physical clocks with lower-bounded 
+𝑆
+1
+energy $\operatorname{Spec}(\widehat{N}) = \mathbb{N}_0$ reside in the 
+Hardy space 
+ and resolve the identity via a shift-covariant Holevo 
+𝐻
+2(𝑆
+1)
+phase positive-operator-valued measure (POVM) 
+, thereby 
+𝐸(𝑑θ)
+circumventing Pauli's theorem. We establish a tri-fold quadrature 
+hierarchy distinguishing the raw clock marginal 
+, the joint 
+𝑀Ψ(θ)
+quadrature 
+, and the conditional system state 
+. In the 
+𝐽Ψ(θ, 𝐹)
+ρ𝑆(θ)
+ideal-clock limit, 
+ satisfies the exact unitary Schr\"odinger 
+ρ𝑆(θ)
+equation, while approximate spectral-window wavepackets 
+$|\Psi_w\rangle$ generate peaked semiclassical clock marginals. For 
+realistic clocks with finite energy spread 
+, the conditional 
+∆𝐸𝐶
+quadrature convolution yields an exact Lindblad double-commutator 
+master equation predicting intrinsic energy-basis dephasing at rate 
+. We prove the equivalence of Quadrature Time to 
+Γ𝑗𝑘∼(𝐸𝑗−𝐸𝑘)
+2/(2ħ∆𝐸𝐶)
+Tomita--Takesaki modular flow, link the framework to Wigner--Weyl 
+phase-space quantization, and extend the formalism to relativistic 
+Klein--Gordon and Dirac constraints, stationary curved spacetimes 
+(Schwarzschild gravitational time dilation, twin-shell decoherence, 
+and horizon dephasing), minisuperspace cosmology, inflationary 
+backreaction, Hartle--Hawking no-boundary states, and near-horizon 
+Bisognano--Wichmann thermodynamics.​
+\end{abstract}​
+​
+\maketitle​
+​
+%=====================================================================
+=========​
+% SECTION I: INTRODUCTION​
+%=====================================================================
+=========​
+\section{Introduction: The Problem of External Time and the Phase 
+Fiber}​
+\label{sec:intro}​
+​
+In standard non-relativistic quantum mechanics, time 
+ enters the 
+𝑡∈𝑅
+Schr\"odinger equation as a classical background parameter external to 
+the Hilbert space . As proved by Pauli~\cite{Pauli1933}, any physical 
+𝐻
+system whose Hamiltonian  is semi-bounded below 
+𝐻
+($\operatorname{Spec}(\widehat{H}) \subset [E_0, \infty)$) admits no 
+self-adjoint time operator  satisfying the canonical Weyl commutation 
+𝑇
+relation 
+. Conversely, in canonical quantum gravity and 
+[𝑇, 𝐻] = 𝑖ħ𝐼
+reparameterization-invariant systems, the Wheeler--DeWitt constraint 
+$\widehat{C}|\Psi\rangle = 0$ eliminates external time completely, 
+leaving a globally stationary universal wave function 
+
+$|\Psi\rangle$~\cite{DeWitt1967}.​
+​
+Two foundational programs have sought to recover temporal order from 
+stationary quantum states:​
+\begin{enumerate}​
+    \item The \textbf{Page--Wootters 
+mechanism}~\cite{PageWootters1983,Giovannetti2015}, which extracts 
+relational dynamics from quantum entanglement between a clock 
+subsystem 
+ and an observed subsystem 
+.​
+𝐻𝐶
+𝐻𝑆
+    \item The \textbf{Connes--Rovelli thermal time 
+hypothesis}~\cite{ConnesRovelli1994}, which identifies physical time 
+flow with the state-dependent Tomita--Takesaki modular automorphism 
+group 
+ of a faithful density state on a von Neumann algebra of 
+σ𝑠
+Ψ
+observables.​
+\end{enumerate}​
+​
+In this paper, we unify and extend these approaches via a geometric 
+and operational framework we call \textbf{State-Generated Quadrature 
+Time} (or the \emph{Hilbert-Space Quadrature Conjecture}). Our 
+starting point is the intrinsic geometry of complex Hilbert space. 
+Normalized pure state vectors form the unit sphere $S(\mathcal{H}) = 
+\{\psi \in \mathcal{H} : \|\psi\| = 1\}$, while physical rays reside 
+in the projective Hilbert space 𝑃(𝐻) = 𝑆(𝐻)/𝑈(1)
+~\cite{Kibble1979,Ashtekar1999}. This quotient defines a principal 
+circular fiber bundle:​
+\begin{equation}​
+    U(1) \hookrightarrow S(\mathcal{H}) \xrightarrow{\pi} 
+\mathbb{P}(\mathcal{H}).​
+    \label{eq:hopf_bundle}​
+\end{equation}​
+Along a single ray, the global circular phase 
+ ($\theta \in S^1 
+ψ ∼𝑒
+𝑖θψ
+\cong U(1)$) is gauge-redundant. However, when a universal state 
+$|\Psi\rangle \in \mathcal{H}_C \otimes \mathcal{H}_S$ entangles a 
+clock sector with a system sector, the quadratic Born map---and its 
+phase-space extension, the Wigner--Weyl 
+transform~\cite{Wigner1932}---``squares'' the circular phase 
+amplitudes of $|\Psi\rangle$ into a nonnegative real measure over 
+clock readings and conditional system states. In this picture, 
+\emph{the wave function does not merely evolve within time; the wave 
+function of the clock sector is the physical generator that squares 
+the circular phase geometry of Hilbert space into observable temporal 
+order.}​
+​
+To render this conjecture mathematically rigorous, our architecture 
+resolves four foundational tensions:​
+\begin{enumerate}​
+
+    \item \textbf{Spectral Singularity Resolution 
+(Sec.~\ref{sec:universal_cover}):} We formulate the exact relational 
+constraint $\widehat{C}|\Psi\rangle = 0$ on the universal cover  via 
+𝑅
+a Gel'fand triple 
+ and group averaging, and prove that a 
+Φ ⊂𝐻𝑈⊂Φ
+×
+Bloch--Floquet winding quotient map 
+ connects  equivariantly to the 
+Πω
+𝑅
+compact clock circle 
+.​
+𝑆
+1
+    \item \textbf{Pauli's Theorem Avoidance (Sec.~\ref{sec:povm}):} By 
+restricting the physical clock to the lower-bounded Hardy space 
+ 
+𝐻
+2(𝑆
+1)
+($\operatorname{Spec}(\widehat{N}) = \mathbb{N}_0$), clock readings 
+are represented by a shift-covariant Holevo phase POVM 
+ on 
+ 
+𝐸(𝑑θ)
+𝑆
+1
+rather than a sharp self-adjoint 
+operator~\cite{Holevo1982,SaleckerWigner1958,PeggBarnett1989}.​
+    \item \textbf{Tri-Fold Quadrature Separation 
+(Sec.~\ref{sec:quadrature}):} We distinguish the raw clock marginal 
+ (which is uniform for exact constraint eigenstates and peaked for 
+𝑀Ψ(θ)
+spectral-window wavepackets $|\Psi_w\rangle$), the joint quadrature 
+, and the conditional system state 
+.​
+𝐽Ψ(θ, 𝐹)
+ρ𝑆(θ)
+    \item \textbf{Finite-Clock Lindblad Master Equation 
+(Sec.~\ref{sec:lindblad}):} We prove that finite clock energy spread 
+ induces a Gaussian phase convolution whose Markovian limit is a 
+∆𝐸𝐶
+completely positive double-commutator master equation with a testable 
+dephasing rate 
+.​
+Γ𝑗𝑘∼(𝐸𝑗−𝐸𝑘)
+2/(2ħ∆𝐸𝐶)
+\end{enumerate}​
+​
+%=====================================================================
+=========​
+% SECTION II: UNIVERSAL COVER, RIGGED HILBERT SPACE & WINDING QUOTIENT​
+%=====================================================================
+=========​
+\section{Exact Relational Dynamics on the Universal Cover and the 
+Winding Quotient Map}​
+\label{sec:universal_cover}​
+​
+\subsection{The Spectral Obstruction on Compact 
+}​
+𝑆
+1
+Suppose one defines the clock Hilbert space directly on the circle as 
+ with discrete integer spectrum $\widehat{N}|n\rangle = 
+𝐻𝐶= 𝐿
+2(𝑆
+1, 𝑑θ/2π)
+n|n\rangle$ (
+) and imposes the exact constraint​
+𝑛∈𝑍
+\begin{equation}​
+    \widehat{C}_{\mathrm{naive}}|\Psi\rangle = \left(\hbar\omega 
+\widehat{N} \otimes I_S + I_C \otimes \widehat{H}_S\right)|\Psi\rangle 
+= 0.​
+    \label{eq:naive_constraint}​
+\end{equation}​
+
+In the joint eigenbasis $\{|n\rangle_C \otimes |E_k\rangle_S\}$, 
+Eq.~\eqref{eq:naive_constraint} requires 
+, which admits 
+ħω𝑛+ 𝐸𝑘= 0
+nonzero solutions in 
+ if and only if every system energy 
+𝐻𝐶⊗𝐻𝑆
+eigenvalue satisfies the strict commensurability condition 
+. 
+𝐸𝑘/(ħω) ∈𝑍
+Equivalently, strict periodicity $|\Psi(2\pi)\rangle = 
+|\Psi(0)\rangle$ forces 
+ on the physical subspace. For a 
+𝑒
+−𝑖2π𝐻𝑆/(ħω)
+= 𝐼𝑆
+generic Hamiltonian 
+ with incommensurate energy gaps or continuous 
+𝐻𝑆
+spectrum, 
+ in the strict Hilbert space.​
+ker(𝐶𝑛𝑎𝑖𝑣𝑒) = {0}
+​
+\subsection{Resolution A: Exact Dynamics on the Universal Cover via 
+Group Averaging}​
+To eliminate this spectral obstruction, we formulate the exact 
+kinematical constraint on the universal cover of the circle,​
+\begin{equation}​
+    \mathcal{H}_C^{\mathrm{univ}} = L^2(\mathbb{R}, dt),​
+\end{equation}​
+equipped with generalized time eigenstates $|t\rangle$ satisfying 
+$\langle t | t' \rangle = \delta(t - t')$ and self-adjoint clock 
+momentum operator 
+ with continuous spectrum 
+𝑃𝑡=−𝑖ħ 𝑑
+𝑑𝑡
+$\operatorname{Spec}(\widehat{P}_t) = \mathbb{R}$. The universal 
+constraint operator on 
+ is​
+𝐻𝑈
+𝑘𝑖𝑛= 𝐻𝐶
+𝑢𝑛𝑖𝑣⊗𝐻𝑆
+\begin{equation}​
+    \widehat{C}_{\mathrm{univ}} = \widehat{P}_t \otimes I_S + I_C 
+\otimes \widehat{H}_S.​
+    \label{eq:univ_constraint}​
+\end{equation}​
+Because zero lies in the continuous spectrum of 
+, physical states 
+𝐶𝑢𝑛𝑖𝑣
+are distributional elements of a Gel'fand triple (rigged Hilbert 
+space)~\cite{Marolf1995}:​
+\begin{equation}​
+    \Phi \subset \mathcal{H}_U^{\mathrm{kin}} \subset \Phi^\times,​
+\end{equation}​
+where 
+ is the dense nuclear space of rapidly decreasing 
+Φ = 𝑆(𝑅) ⊗𝐷(𝐻𝑆)
+smooth test states. Physical states $|\Psi\rangle \in \Phi^\times$ are 
+constructed via refined algebraic quantization (group averaging) 
+through the rigging map 
+:​
+𝑃𝑝ℎ𝑦𝑠: Φ →Φ
+×
+\begin{equation}​
+    \mathbb{P}_{\mathrm{phys}} = \delta(\widehat{C}_{\mathrm{univ}}) = 
+\frac{1}{2\pi\hbar} \int_{-\infty}^{\infty} ds \, e^{i s 
+\widehat{C}_{\mathrm{univ}} / \hbar},​
+    \label{eq:group_averaging}​
+
+\end{equation}​
+which induces the positive-definite physical inner product on the 
+constraint surface:​
+\begin{equation}​
+    \langle \phi | \psi \rangle_{\mathrm{phys}} := 
+\int_{-\infty}^{\infty} \frac{ds}{2\pi\hbar} \, \langle \phi | e^{i s 
+\widehat{C}_{\mathrm{univ}} / \hbar} | \psi \rangle_{\mathrm{kin}}.​
+    \label{eq:phys_inner_product}​
+\end{equation}​
+In the generalized clock basis $|t\rangle$, any group-averaged state 
+$|\Psi\rangle = \mathbb{P}_{\mathrm{phys}}|\psi\rangle$ satisfies 
+$\langle t | \widehat{C}_{\mathrm{univ}} | \Psi \rangle = 0$, or​
+\begin{equation}​
+    \left(-i\hbar \frac{\partial}{\partial t} + \widehat{H}_S\right) 
+|\Psi(t)\rangle = 0 \implies |\Psi(t)\rangle = e^{-i \widehat{H}_S t / 
+\hbar} |\Psi(0)\rangle,​
+    \label{eq:univ_evolution}​
+\end{equation}​
+for arbitrary system spectra $\operatorname{Spec}(\widehat{H}_S) 
+\subset \mathbb{R}$.​
+​
+\subsection{The Bloch--Floquet Winding Quotient Map Connecting  to 
+}​
+𝑅
+𝑆
+1
+To connect the universal cover 
+ to an operational cyclic 
+𝐻𝐶
+𝑢𝑛𝑖𝑣= 𝐿
+2(𝑅, 𝑑𝑡)
+clock on the circle $S^1 \cong \mathbb{R} / (T_0 \mathbb{Z})$ with 
+fundamental period 
+, we introduce the Bloch--Floquet winding 
+𝑇0 = 2π/ω
+quotient map.​
+​
+\begin{proposition}[Bloch--Floquet Winding Quotient Homomorphism]​
+\label{prop:winding}​
+Let 
+ be the universal cover clock Hilbert space with 
+𝐻𝐶
+𝑢𝑛𝑖𝑣= 𝐿
+2(𝑅, 𝑑𝑡)
+momentum operator 
+ and generalized basis $\{|t\rangle\}_{t \in 
+𝑃𝑡=−𝑖ħ 𝑑
+𝑑𝑡
+\mathbb{R}}$, and let 
+ be the Hardy space on the 
+𝐻𝐶
+𝑐𝑖𝑟𝑐= 𝐻
+2(𝑆
+1) ⊂𝐿
+2(𝑆
+1, 𝑑θ/2π)
+circle of period 
+ with number generator 
+ 
+𝑇0 = 2π/ω
+𝑁=−𝑖∂
+∂θ
+($\operatorname{Spec}(\widehat{N}) = \mathbb{N}_0$) and clock 
+Hamiltonian 
+. Then:​
+𝐻𝐶= ħω𝑁
+\begin{enumerate}​
+    \item The periodization map 
+ defined over winding 
+Πω: 𝑆(𝑅) →𝐶
+∞(𝑆
+1)
+sectors 
+ by​
+𝑚∈𝑍
+    \begin{equation}​
+        (\Pi_\omega f)(\theta) := \sum_{m=-\infty}^{\infty} 
+f\!\left(\frac{\theta + 2\pi m}{\omega}\right), \qquad \theta \in [0, 
+2\pi),​
+
+        \label{eq:winding_map}​
+    \end{equation}​
+    intertwines temporal translations on  with 
+ rotations on 
+.​
+𝑅
+𝑈(1)
+𝑆
+1
+    \item Under the sign convention $\theta = -\omega t \pmod{2\pi}$ 
+(or conjugated clock phase), 
+ maps the universal cover constraint 
+Πω ⊗𝐼𝑆
+ equivariantly onto the circular constraint 
+𝐶𝑢𝑛𝑖𝑣= 𝑃𝑡⊗𝐼𝑆+ 𝐼𝐶⊗𝐻𝑆
+operator​
+    \begin{equation}​
+        \widehat{C}_{\mathrm{circ}} = \hbar\omega \widehat{N} \otimes 
+I_S - I_C \otimes \widehat{H}_S.​
+        \label{eq:circ_constraint}​
+    \end{equation}​
+    \item Summing the universal cover generalized states $|t\rangle$ 
+across all winding sectors 
+ projected onto the positive-frequency 
+𝑚∈𝑍
+Hardy space 
+ yields the covariant Holevo phase POVM 
+𝐻
+2(𝑆
+1)
+ on 
+.​
+𝐸(𝑑θ) =
+1
+2π |θ)(θ|𝑑θ
+𝑆
+1
+\end{enumerate}​
+\end{proposition}​
+​
+\begin{proof}​
+For any Schwartz test function 
+, rapid decay ensures absolute 
+𝑓∈𝑆(𝑅)
+and uniform convergence of the series in Eq.~\eqref{eq:winding_map} on 
+, defining a smooth 
+-periodic function on 
+. A shift by 
+, 
+[0, 2π)
+2π
+𝑆
+1
+τ ∈𝑅
+, maps under 
+ to​
+(𝑇τ𝑓)(𝑡) = 𝑓(𝑡−τ)
+Πω
+\begin{equation}​
+    (\Pi_\omega T_\tau f)(\theta) = \sum_{m=-\infty}^{\infty} 
+f\!\left(\frac{\theta - \omega\tau + 2\pi m}{\omega}\right) = 
+(\Pi_\omega f)(\theta - \omega\tau \pmod{2\pi}),​
+\end{equation}​
+proving that 
+ intertwines the -action with the 
+-action on 
+. 
+Πω
+𝑅
+𝑈(1)
+𝑆
+1
+Conversely, given a smooth partition-of-unity window function 
+ supported within a single fundamental domain 
+ 
+𝑤(𝑡) ∈𝐶𝑐
+∞(𝑅)
+(−𝑇0/2, 𝑇0/2)
+satisfying 
+, the local section lift $(\Pi_\omega^* 
+𝑚∈𝑍
+∑|𝑤(𝑡−𝑚𝑇0)|
+2 = 1
+g)(t) = g(\omega t \pmod{2\pi}) w(t)$ embeds 
+ isometrically into a 
+𝐿
+2(𝑆
+1)
+single winding sector of 
+.​
+𝐿
+2(𝑅)
+​
+To establish the push-forward of the constraint operator, 
+differentiate Eq.~\eqref{eq:winding_map} with respect to 
+ using 
+θ = ω𝑡
+the chain rule 
+. For a universal cover solution satisfying 
+∂
+∂θ =
+1
+ω
+∂
+∂𝑡
+$-i\hbar \frac{\partial}{\partial t}|\Psi_{\mathrm{univ}}(t)\rangle + 
+\widehat{H}_S |\Psi_{\mathrm{univ}}(t)\rangle = 0$, projecting onto 
+
+the positive-frequency circular sector where 
+$|\Psi_{\mathrm{circ}}(\theta)\rangle = \sum_{n=0}^\infty 
+e^{-in\theta}|\Psi_n\rangle$ (so that the conjugate phase bra 
+$\langle\theta| = \sum_{n=0}^\infty e^{-in\theta}\langle n|$ extracts 
+positive clock modes 
+) yields​
+𝑛≥0
+\begin{equation}​
+    i\hbar\omega \frac{\partial}{\partial \theta} 
+|\Psi_{\mathrm{circ}}(\theta)\rangle = \widehat{H}_S 
+|\Psi_{\mathrm{circ}}(\theta)\rangle \iff \left(\hbar\omega 
+\widehat{N} \otimes I_S - I_C \otimes 
+\widehat{H}_S\right)|\Psi_{\mathrm{circ}}\rangle = 0.​
+\end{equation}​
+Finally, partitioning 
+ into its circular phase $\theta = \omega t 
+𝑡∈𝑅
+\pmod{2\pi}$ and integer winding number $m = \lfloor \omega t / 2\pi 
+\rfloor$, the sum of generalized eigenstates over all winding sectors 
+defines the periodic Dirac comb distribution​
+\begin{equation}​
+    |\theta_{\mathrm{comb}}\rangle = \sum_{m=-\infty}^{\infty} \left| 
+t = \frac{\theta + 2\pi m}{\omega} \right\rangle = 
+\sum_{n=-\infty}^{\infty} e^{in\theta} |n\rangle.​
+\end{equation}​
+Applying the orthogonal Hardy projection $\mathbb{P}_+ = 
+\sum_{n=0}^\infty |n\rangle\langle n|$ onto physical lower-bounded 
+clock states (
+) maps $|\theta_{\mathrm{comb}}\rangle \mapsto 
+𝑛≥0
+|\theta) = \sum_{n=0}^\infty e^{in\theta}|n\rangle$, wrapping the 
+Lebesgue measure 
+ into the covariant phase POVM 
+.​
+𝑑𝑡
+𝐸(𝑑θ) =
+1
+2π |θ)(θ|𝑑θ
+\end{proof}​
+​
+\subsection{Resolution B: Operational Compactifications on 
+}​
+𝑆
+1
+When working directly on the compact clock space 
+ without passing 
+𝐻𝐶
+𝑐𝑖𝑟𝑐
+to the full universal cover, spectral incommensurability is resolved 
+operationally in one of two ways:​
+\begin{enumerate}​
+    \item \textbf{Spectral Window Constraint:} Replace the sharp 
+equality $\widehat{C}|\Psi\rangle = 0$ with a bounded variance 
+condition $\langle \Psi | \widehat{C}^2 | \Psi \rangle \le \epsilon^2$ 
+using a regularized window filter 
+ peaked at zero, yielding 
+𝑓(𝐶/ϵ)
+normalizable states $|\Psi_\epsilon\rangle = 
+f(\widehat{C}/\epsilon)|\eta\rangle / 
+\|f(\widehat{C}/\epsilon)|\eta\rangle\|$.​
+    \item \textbf{Finite Pegg--Barnett Clock (
+):} Truncate the 
+𝐻𝐶
+(𝑁) = 𝐶
+𝑁
+clock Hilbert space to  energy levels $\{|0\rangle, \dots, 
+𝑁
+|N-1\rangle\}$ with discrete orthonormal phase 
+states~\cite{PeggBarnett1989}​
+    \begin{equation}​
+
+        |\theta_k^{(N)}\rangle = \frac{1}{\sqrt{N}} \sum_{n=0}^{N-1} 
+e^{in\theta_k} |n\rangle, \qquad \theta_k = \frac{2\pi k}{N}, \quad k 
+\in \{0, 1, \dots, N-1\}.​
+        \label{eq:pegg_barnett_states}​
+    \end{equation}​
+\end{enumerate}​
+​
+%=====================================================================
+=========​
+% SECTION III: COVARIANT CLOCK PHASE POVM​
+%=====================================================================
+=========​
+\section{The Covariant Clock Phase POVM and Avoidance of Pauli's 
+Theorem}​
+\label{sec:povm}​
+​
+Let the physical clock Hilbert space be the Hardy space 
+ 
+𝐻𝐶= 𝐻
+2(𝑆
+1)
+spanned by orthonormal energy eigenstates $\{|n\rangle\}_{n=0}^\infty$ 
+with lower-bounded Hamiltonian 
+ 
+𝐻𝐶= ħω𝑁
+($\operatorname{Spec}(\widehat{N}) = \mathbb{N}_0$). Following 
+Holevo~\cite{Holevo1982}, we define the generalized circular phase 
+vectors 
+ for $\theta \in [0, 2\pi) \cong S^1$:​
+|θ) ∈Φ𝐶
+×
+\begin{equation}​
+    |\theta) = \sum_{n=0}^{\infty} e^{in\theta} |n\rangle.​
+    \label{eq:holevo_vectors}​
+\end{equation}​
+Because the sum is bounded below by 
+, the states 
+ are 
+𝑛= 0
+|θ)
+non-orthogonal. Their distributional inner product is the boundary 
+Szeg\H{o} kernel on the unit disk:​
+\begin{equation}​
+    (\theta | \theta') = \sum_{n=0}^{\infty} e^{in(\theta' - \theta)} 
+= \pi \delta_{2\pi}(\theta - \theta') + \frac{1}{1 - e^{i(\theta' - 
+\theta + i0^+)}}.​
+    \label{eq:szego_kernel}​
+\end{equation}​
+​
+\begin{proposition}[Covariant Circular Clock POVM]​
+\label{prop:povm}​
+The operator-valued measure 
+ defined on Borel subsets 
+𝐸: 𝐵(𝑆
+1) →𝐵(𝐻𝐶)
+ by​
+∆⊂𝑆
+1
+\begin{equation}​
+    E(\Delta) = \int_\Delta E(d\theta), \qquad E(d\theta) := 
+\frac{1}{2\pi} |\theta)(\theta| \, d\theta,​
+    \label{eq:clock_povm}​
+\end{equation}​
+
+is a normalized, shift-covariant positive-operator-valued measure 
+(POVM) satisfying:​
+\begin{enumerate}​
+    \item \textbf{Positivity:} $\langle \chi | E(\Delta) | \chi 
+\rangle = \int_\Delta \frac{d\theta}{2\pi} |(\theta|\chi\rangle|^2 \ge 
+0$ for all $|\chi\rangle \in \mathcal{H}_C$.​
+    \item \textbf{Completeness:} 
+.​
+𝐸(𝑆
+1) =
+0
+2π
+∫𝑑θ
+2π |θ)(θ| = 𝐼𝐶
+    \item \textbf{Phase Shift Covariance:} For the unitary clock 
+generator 
+,​
+𝑈(ϕ) = 𝑒
+𝑖ϕ𝑁
+    \begin{equation}​
+        U(\phi) E(\Delta) U^\dagger(\phi) = E(\Delta \oplus \phi), 
+\qquad \forall \phi \in S^1,​
+        \label{eq:povm_covariance}​
+    \end{equation}​
+    where 
+ denotes addition modulo 
+.​
+⊕
+2π
+    \item \textbf{Finite- Weak Convergence:} The finite-dimensional 
+𝑁
+Pegg--Barnett projection-valued measure $E^{(N)}(\Delta) = 
+\sum_{\theta_k \in \Delta} 
+|\theta_k^{(N)}\rangle\langle\theta_k^{(N)}|$ converges in the weak 
+operator topology to 
+ as 
+.​
+𝐸(∆)
+𝑁→∞
+\end{enumerate}​
+\end{proposition}​
+​
+\begin{proof}​
+Positivity is immediate from $|(\theta|\chi\rangle|^2 \ge 0$. For 
+completeness, let $|\chi\rangle = \sum_{n=0}^\infty c_n |n\rangle \in 
+\mathcal{H}_C$. By Parseval's theorem for Fourier series in 
+,​
+𝐻
+2(𝑆
+1)
+\begin{equation}​
+    \langle \chi | E(S^1) | \chi \rangle = \int_0^{2\pi} 
+\frac{d\theta}{2\pi} \sum_{n=0}^{\infty} \sum_{m=0}^{\infty} c_n^* c_m 
+e^{i(n-m)\theta} = \sum_{n=0}^{\infty} \sum_{m=0}^{\infty} c_n^* c_m 
+\delta_{nm} = \sum_{n=0}^{\infty} |c_n|^2 = \langle \chi | \chi 
+\rangle,​
+\end{equation}​
+so 
+ by polarization. For phase shift covariance, observe that 
+𝐸(𝑆
+1) = 𝐼𝐶
+$U(\phi)|\theta) = \sum_{n=0}^\infty e^{in\phi} e^{in\theta}|n\rangle 
+= |\theta + \phi)$, whence changing variables $\theta' = \theta + \phi 
+\pmod{2\pi}$ in Eq.~\eqref{eq:clock_povm} yields 𝑈(ϕ)𝐸(∆)𝑈
+†(ϕ) = 𝐸(∆⊕ϕ)
+. Finally, for any $|\chi\rangle, |\eta\rangle \in \mathcal{H}_C$ and 
+Borel interval 
+, the Riemann sum​
+∆⊂𝑆
+1
+\begin{equation}​
+    \langle \chi | E^{(N)}(\Delta) | \eta \rangle = \frac{1}{N} 
+\sum_{\theta_k \in \Delta} \left(\sum_{n=0}^{N-1} c_n^* 
+e^{-in\theta_k}\right)\left(\sum_{m=0}^{N-1} d_m e^{im\theta_k}\right) 
+
+\xrightarrow{N \to \infty} \int_\Delta \frac{d\theta}{2\pi} \langle 
+\chi | \theta)(\theta | \eta \rangle = \langle \chi | E(\Delta) | \eta 
+\rangle,​
+\end{equation}​
+establishing weak operator convergence.​
+\end{proof}​
+​
+%=====================================================================
+=========​
+% SECTION IV: QUADRATURE CONJECTURE & CONDITIONAL DYNAMICS​
+%=====================================================================
+=========​
+\section{The Quadrature Conjecture and Tri-Fold Conditional Structure}​
+\label{sec:quadrature}​
+​
+To avoid conflating global stationarity with conditional evolution, we 
+explicitly separate three distinct quadratic objects generated by the 
+universal state $|\Psi\rangle$.​
+​
+\begin{definition}[Tri-Fold Quadrature Architecture]​
+\label{def:trifold}​
+Let $|\Psi\rangle \in \mathcal{H}_C \otimes \mathcal{H}_S$ be a state 
+of the composite universe, let 
+ be the covariant clock 
+𝐸(𝑑θ) =
+1
+2π |θ)(θ|𝑑θ
+POVM on 
+, and let $|\Psi(\theta)\rangle := ((\theta|_C \otimes 
+𝑆
+1
+I_S)|\Psi\rangle \in \mathcal{H}_S$ be the unnormalized conditional 
+system vector. We define:​
+\begin{enumerate}​
+    \item \textbf{The Raw Clock Marginal (
+):} The probability 
+𝑀Ψ
+density for the clock to register phase 
+ regardless of the system 
+θ ∈𝑆
+1
+state:​
+    \begin{equation}​
+        M_\Psi(\theta) := \frac{1}{2\pi} 
+\|\Psi(\theta)\|_{\mathcal{H}_S}^2 = \frac{1}{2\pi} \langle \Psi | 
+\left(|\theta)(\theta|_C \otimes I_S\right) | \Psi \rangle, \qquad 
+T_\Psi(d\theta) = M_\Psi(\theta)\,d\theta.​
+        \label{eq:raw_marginal}​
+    \end{equation}​
+    \item \textbf{The Joint Clock-System Quadrature (
+):} For any 
+𝐽Ψ
+system effect or projector 
+ (
+), the joint probability 
+𝐹∈𝐵(𝐻𝑆)
+0 ≤𝐹≤𝐼𝑆
+density of observing system property  at clock reading :​
+𝐹
+θ
+    \begin{equation}​
+        J_\Psi(\theta, F) := \frac{1}{2\pi} \langle \Psi(\theta) | F | 
+\Psi(\theta) \rangle = \frac{1}{2\pi} \langle \Psi | 
+\left(|\theta)(\theta|_C \otimes F\right) | \Psi \rangle.​
+        \label{eq:joint_quadrature}​
+    \end{equation}​
+
+    \item \textbf{The Conditional System State (
+):} The normalized 
+ρ𝑆(θ)
+density operator of the system conditioned on clock phase :​
+θ
+    \begin{equation}​
+        \rho_S(\theta) := \frac{\operatorname{Tr}_C\left[(E(d\theta) 
+\otimes I_S)|\Psi\rangle\langle\Psi|\right]}{\langle \Psi | E(d\theta) 
+\otimes I_S | \Psi \rangle} = 
+\frac{|\Psi(\theta)\rangle\langle\Psi(\theta)|}{\|\Psi(\theta)\|_{\mat
+hcal{H}_S}^2},​
+        \label{eq:cond_state}​
+    \end{equation}​
+    such that the conditional probability of outcome  given clock 
+𝐹
+reading  is $P_\Psi(F | \theta) = J_\Psi(\theta, F)/M_\Psi(\theta) = 
+θ
+\operatorname{Tr}_S[\rho_S(\theta) F]$.​
+\end{enumerate}​
+\end{definition}​
+​
+\begin{conjecture}[The Hilbert-Space Quadrature Conjecture]​
+\label{conj:main}​
+In a closed quantum universe 
+, there exists no primitive 
+𝐻𝑈= 𝐻𝐶⊗𝐻𝑆
+external background time parameter. All observable temporal ordering 
+and dynamical evolution are generated internally by the universal wave 
+function $|\Psi\rangle$ through the quadratic mapping $\Psi \mapsto 
+(M_\Psi, J_\Psi, \rho_S)$ over the covariant circular phase POVM 
+. 
+𝐸(𝑑θ)
+Classical time 
+ is a derived semiclassical statistic of this 
+𝑡= θ/ω
+state-generated quadrature structure.​
+\end{conjecture}​
+​
+\begin{theorem}[Emergence of Conditional Schr\"odinger Dynamics]​
+\label{thm:schrodinger}​
+Let $|\Psi\rangle \in \Phi^\times$ be an exact physical state 
+satisfying the relational constraint 
+$\widehat{C}_{\mathrm{circ}}|\Psi\rangle = \left(\hbar\omega 
+\widehat{N} \otimes I_S - I_C \otimes \widehat{H}_S\right)|\Psi\rangle 
+= 0$ on the positive-spectrum subspace where 
+ (
+), or 
+𝐸𝑘= ħω𝑛𝑘
+𝑛𝑘∈𝑁0
+equivalently let $|\Psi(t)\rangle$ be the universal cover state of 
+Eq.~\eqref{eq:univ_evolution} within a single fundamental period 
+. Then:​
+𝑡= θ/ω ∈[0, 2π/ω)
+\begin{enumerate}​
+    \item The raw clock marginal is globally uniform across the 
+circle:​
+    \begin{equation}​
+        M_\Psi(\theta) = \frac{1}{2\pi} = \mathrm{const.}​
+        \label{eq:uniform_marginal}​
+    \end{equation}​
+    \item The conditional system state 
+ is pure, $\rho_S(t) 
+ρ𝑆(𝑡): = ρ𝑆(ω𝑡)
+= |\psi(t)\rangle\langle\psi(t)|$, and satisfies the exact unitary 
+
+Schr\"odinger--von Neumann equation:​
+    \begin{equation}​
+        i\hbar \frac{\partial}{\partial t} |\psi(t)\rangle = 
+\widehat{H}_S |\psi(t)\rangle, \qquad i\hbar \frac{d}{dt} \rho_S(t) = 
+[\widehat{H}_S, \rho_S(t)].​
+        \label{eq:schrodinger_emergent}​
+    \end{equation}​
+\end{enumerate}​
+\end{theorem}​
+​
+\begin{proof}​
+Expanding $|\Psi\rangle = \sum_{n=0}^\infty \sum_k c_{n,k} |n\rangle_C 
+\otimes |E_k\rangle_S$ and imposing 
+$\widehat{C}_{\mathrm{circ}}|\Psi\rangle = 0$ yields 
+, 
+(ħω𝑛−𝐸𝑘)𝑐𝑛,𝑘= 0
+restricting the support to 
+ with normalized coefficients 
+𝑛= 𝑛𝑘= 𝐸𝑘/(ħω)
+:​
+𝑘
+∑|α𝑘|
+2 = 1
+\begin{equation}​
+    |\Psi\rangle = \sum_k \alpha_k |n_k\rangle_C \otimes 
+|E_k\rangle_S.​
+    \label{eq:entangled_stationary}​
+\end{equation}​
+Projecting onto the conjugate phase vector $(\theta|_C = 
+\sum_{m=0}^\infty e^{-im\theta}\langle m|_C$ gives the conditional 
+amplitude​
+\begin{equation}​
+    |\Psi(\theta)\rangle = ((\theta|_C \otimes I_S)|\Psi\rangle = 
+\sum_k \alpha_k e^{-i n_k \theta} |E_k\rangle_S = \sum_k \alpha_k 
+e^{-i E_k \theta / (\hbar\omega)} |E_k\rangle_S.​
+    \label{eq:psi_theta_expansion}​
+\end{equation}​
+Taking the norm squared of Eq.~\eqref{eq:psi_theta_expansion} using 
+the orthonormality $\langle E_j | E_k \rangle_S = \delta_{jk}$ yields​
+\begin{equation}​
+    M_\Psi(\theta) = \frac{1}{2\pi} \langle \Psi(\theta) | 
+\Psi(\theta) \rangle = \frac{1}{2\pi} \sum_k |\alpha_k|^2 = 
+\frac{1}{2\pi},​
+\end{equation}​
+which proves global stationarity of the raw marginal. Setting 
+ (
+𝑡= θ/ω
+) and differentiating $|\psi(t)\rangle = |\Psi(\omega 
+∂
+∂θ =
+1
+ω
+∂
+∂𝑡
+t)\rangle$ gives​
+\begin{equation}​
+    i\hbar \frac{\partial}{\partial t} |\psi(t)\rangle = i\hbar\omega 
+\frac{\partial}{\partial \theta} \sum_k \alpha_k e^{-i E_k \theta / 
+(\hbar\omega)} |E_k\rangle_S = \sum_k \alpha_k E_k e^{-i E_k t / 
+\hbar} |E_k\rangle_S = \widehat{H}_S |\psi(t)\rangle,​
+
+\end{equation}​
+from which 
+ follows immediately.​
+𝑖ħ 𝑑
+𝑑𝑡ρ𝑆(𝑡) = [𝐻𝑆, ρ𝑆(𝑡)]
+\end{proof}​
+​
+\begin{proposition}[Semiclassical Peaked Time via Spectral-Window 
+Wavepackets]​
+\label{prop:wavepacket}​
+Let 
+ be a normalized clock wavepacket (
+) peaked 
+𝑤(𝑡) ∈𝑆(𝑅)
+𝑅
+∫|𝑤(𝑡)|
+2𝑑𝑡= 1
+around a semiclassical time  with temporal width 
+, and define the 
+𝑡0
+∆𝑇
+normalizable history state on 
+:​
+𝐻𝐶
+𝑢𝑛𝑖𝑣⊗𝐻𝑆
+\begin{equation}​
+    |\Psi_w\rangle = \int_{-\infty}^{\infty} dt \, w(t) \, |t\rangle_C 
+\otimes e^{-i\widehat{H}_S t / \hbar} |\psi_0\rangle_S.​
+    \label{eq:wavepacket_state}​
+\end{equation}​
+Then $|\Psi_w\rangle$ satisfies the spectral-window constraint bound​
+\begin{equation}​
+    \|\widehat{C}_{\mathrm{univ}} |\Psi_w\rangle\|_{\mathcal{H}_U} = 
+\hbar \|w'\|_{L^2(\mathbb{R})} \sim \frac{\hbar}{\Delta T},​
+    \label{eq:window_bound}​
+\end{equation}​
+its raw clock marginal is the peaked distribution 
+, and 
+𝑀Ψ𝑤
+(𝑡) = |𝑤(𝑡)|
+2
+its conditional system state 
+ still obeys the exact Schr\"odinger 
+ρ𝑆(𝑡)
+equation~\eqref{eq:schrodinger_emergent} everywhere on the support of 
+.​
+𝑤(𝑡)
+\end{proposition}​
+​
+\begin{proof}​
+Applying 
+ to Eq.~\eqref{eq:wavepacket_state} and 
+𝐶𝑢𝑛𝑖𝑣=−𝑖ħ 𝑑
+𝑑𝑡⊗𝐼𝑆+ 𝐼𝐶⊗𝐻𝑆
+integrating by parts gives​
+\begin{align}​
+    \widehat{C}_{\mathrm{univ}}|\Psi_w\rangle &= 
+\int_{-\infty}^{\infty} dt \, |t\rangle_C \otimes \left(-i\hbar 
+\frac{d}{dt} + \widehat{H}_S\right)\!\left[w(t) e^{-i\widehat{H}_S t / 
+\hbar} |\psi_0\rangle_S\right] \nonumber\\​
+    &= -i\hbar \int_{-\infty}^{\infty} dt \, w'(t) \, |t\rangle_C 
+\otimes e^{-i\widehat{H}_S t / \hbar} |\psi_0\rangle_S.​
+\end{align}​
+Taking the 
+-norm yields 
+𝐻𝑈
+$\|\widehat{C}_{\mathrm{univ}}|\Psi_w\rangle\|^2 = \hbar^2 
+\int_{-\infty}^\infty |w'(t)|^2 dt = \hbar^2 \|w'\|_{L^2}^2$. 
+Projecting onto $\langle t|_C$ gives $|\Psi_w(t)\rangle = w(t) 
+
+e^{-i\widehat{H}_S t / \hbar}|\psi_0\rangle_S$, so the raw clock 
+marginal is $M_{\Psi_w}(t) = \|\Psi_w(t)\|^2 = |w(t)|^2$, while the 
+normalized conditional state $|\psi(t)\rangle = |\Psi_w(t)\rangle / 
+|w(t)| = e^{-i\widehat{H}_S t/\hbar}|\psi_0\rangle_S$ evolves 
+unitarily under 
+.​
+𝐻𝑆
+\end{proof}​
+​
+%=====================================================================
+=========​
+% SECTION V: FINITE-CLOCK LINDBLAD DEPHASING​
+%=====================================================================
+=========​
+\section{Finite-Clock Corrections and Intrinsic Lindblad Dephasing}​
+\label{sec:lindblad}​
+​
+When the clock subsystem is prepared or read out with a finite energy 
+variance 
+, the Fourier uncertainty relation imposes a 
+∆𝐸𝐶< ∞
+fundamental temporal resolution limit:​
+\begin{equation}​
+    \sigma_t \gtrsim \frac{\hbar}{2\Delta E_C}.​
+    \label{eq:clock_uncertainty}​
+\end{equation}​
+Consequently, conditioning on an imperfect clock readout at nominal 
+time  averages the ideal unitary evolution 
+ against the 
+𝑡
+𝑈(𝑡) = 𝑒
+−𝑖𝐻𝑆𝑡/ħ
+clock pointer's quadrature resolution kernel 
+.​
+𝐺σ𝑡
+(τ)
+​
+\begin{theorem}[Finite-Clock Double-Commutator Master Equation]​
+\label{thm:lindblad}​
+Let the observed conditional system density operator under a Gaussian 
+clock resolution kernel 
+ be given by the 
+𝐺σ𝑡
+(τ) = (2πσ𝑡
+2)
+−1/2 exp(−τ
+2/2σ𝑡
+2)
+convolution channel​
+\begin{equation}​
+    \rho_S^{\mathrm{obs}}(t) = \int_{-\infty}^{\infty} d\tau \, 
+G_{\sigma_t}(\tau) \, U(t + \tau) \rho_S(0) U^\dagger(t + \tau).​
+    \label{eq:gaussian_channel}​
+\end{equation}​
+Then:​
+\begin{enumerate}​
+    \item To second order in 
+, the short-time conditional state 
+σ𝑡
+acquires a double-commutator correction:​
+    \begin{equation}​
+        \rho_S^{\mathrm{obs}}(t) = U(t)\left[\rho_S(0) - 
+\frac{\sigma_t^2}{2\hbar^2} [\widehat{H}_S, [\widehat{H}_S, 
+\rho_S(0)]] + \mathcal{O}(\sigma_t^4)\right]U^\dagger(t).​
+
+        \label{eq:short_time_expansion}​
+    \end{equation}​
+    \item In the coarse-grained Markovian regime where clock phase 
+variance accumulates diffusively as 
+ with characteristic clock 
+σ𝑡
+2(𝑡) = 𝑇𝐶𝑡
+correlation scale 
+, 
+ satisfies the exact, completely 
+𝑇𝐶∼ħ/∆𝐸𝐶
+ρ𝑆
+𝑜𝑏𝑠(𝑡)
+positive Lindblad master equation~\cite{Gambini2004,Milburn1991}:​
+    \begin{equation}​
+        \frac{d\rho_S}{dt} = -\frac{i}{\hbar}[\widehat{H}_S, \rho_S] - 
+\frac{T_C}{2\hbar^2} [\widehat{H}_S, [\widehat{H}_S, \rho_S]] = 
+-\frac{i}{\hbar}[\widehat{H}_S, \rho_S] + 
+\frac{T_C}{\hbar^2}\left(\widehat{H}_S \rho_S \widehat{H}_S - 
+\frac{1}{2}\{\widehat{H}_S^2, \rho_S\}\right).​
+        \label{eq:lindblad_master}​
+    \end{equation}​
+    \item In the energy eigenbasis $\widehat{H}_S |E_j\rangle = E_j 
+|E_j\rangle$, diagonal populations 
+ are conserved, while 
+ρ𝑗𝑗(𝑡) = ρ𝑗𝑗(0)
+off-diagonal coherences decay exponentially as​
+    \begin{equation}​
+        \rho_{jk}^{\mathrm{obs}}(t) = \rho_{jk}(0) 
+\exp\left(-i\omega_{jk} t - \Gamma_{jk} t\right), \qquad \Gamma_{jk} = 
+\frac{T_C}{2\hbar^2}(E_j - E_k)^2 \sim \frac{(E_j - E_k)^2}{2\hbar 
+\Delta E_C},​
+        \label{eq:dephasing_rate}​
+    \end{equation}​
+    where 
+.​
+ω𝑗𝑘= (𝐸𝑗−𝐸𝑘)/ħ
+\end{enumerate}​
+\end{theorem}​
+​
+\begin{proof}​
+Factoring 
+ in Eq.~\eqref{eq:gaussian_channel} and 
+𝑈(𝑡+ τ) = 𝑈(𝑡)𝑈(τ)
+expanding 
+ via the Baker--Campbell--Hausdorff series in  
+𝑈(τ)ρ𝑆(0)𝑈
+†(τ)
+τ
+gives​
+\begin{equation}​
+    U(\tau)\rho_S(0)U^\dagger(\tau) = \rho_S(0) + 
+\frac{\tau}{i\hbar}[\widehat{H}_S, \rho_S(0)] - 
+\frac{\tau^2}{2\hbar^2}[\widehat{H}_S, [\widehat{H}_S, \rho_S(0)]] + 
+\mathcal{O}(\tau^3).​
+\end{equation}​
+Integrating against 
+ using 
+ and 
+ yields 
+𝐺σ𝑡
+(τ)
+∫𝑑τ𝐺σ𝑡
+(τ)τ = 0
+∫𝑑τ𝐺σ𝑡
+(τ)τ
+2 = σ𝑡
+2
+Eq.~\eqref{eq:short_time_expansion}.​
+​
+To obtain the exact behavior in the energy eigenbasis, expand 
+$\rho_S(0) = \sum_{j,k} \rho_{jk}(0)|E_j\rangle\langle E_k|$ in 
+Eq.~\eqref{eq:gaussian_channel}:​
+
+\begin{equation}​
+    \rho_{jk}^{\mathrm{obs}}(t) = \rho_{jk}(0) e^{-i\omega_{jk} t} 
+\int_{-\infty}^{\infty} \frac{d\tau}{\sqrt{2\pi}\sigma_t} 
+\exp\left(-\frac{\tau^2}{2\sigma_t^2} - i\omega_{jk}\tau\right) = 
+\rho_{jk}(0) \exp\left(-i\omega_{jk} t - \frac{1}{2}\omega_{jk}^2 
+\sigma_t^2\right).​
+    \label{eq:exact_gaussian_fourier}​
+\end{equation}​
+Substituting the diffusive clock variance scaling 
+ into 
+σ𝑡
+2(𝑡) = 𝑇𝐶𝑡
+Eq.~\eqref{eq:exact_gaussian_fourier} produces 
+Eq.~\eqref{eq:dephasing_rate}. Differentiating 
+Eq.~\eqref{eq:dephasing_rate} with respect to  gives​
+𝑡
+\begin{equation}​
+    \frac{d\rho_{jk}^{\mathrm{obs}}}{dt} = \left[-i\omega_{jk} - 
+\frac{T_C}{2}\omega_{jk}^2\right] \rho_{jk}^{\mathrm{obs}}(t).​
+\end{equation}​
+Using $[\widehat{H}_S, |E_j\rangle\langle E_k|] = 
+\hbar\omega_{jk}|E_j\rangle\langle E_k|$ and $[\widehat{H}_S, 
+[\widehat{H}_S, |E_j\rangle\langle E_k|]] = \hbar^2\omega_{jk}^2 
+|E_j\rangle\langle E_k|$, along with the algebraic identity 
+, establishes 
+−1
+2 [𝐻𝑆, [𝐻𝑆, ρ𝑆]] = 𝐻𝑆ρ𝑆𝐻𝑆−1
+2 {𝐻𝑆
+2
+, ρ𝑆}
+Eq.~\eqref{eq:lindblad_master} in standard 
+Gorini--Kossakowski--Sudarshan--Lindblad (GKSL) form with a single 
+Hermitian jump operator 
+.​
+𝐿=
+𝑇𝐶/ħ
+2𝐻𝑆
+\end{proof}​
+​
+%=====================================================================
+=========​
+% SECTION VI: MODULAR FLOW & WIGNER PHASE-SPACE QUADRATURE​
+%=====================================================================
+=========​
+\section{Equivalence to Modular Flow and Wigner Phase-Space 
+Quadrature}​
+\label{sec:modular_wigner}​
+​
+\subsection{Tomita--Takesaki Modular Flow as State-Generated 
+Quadrature Time}​
+\begin{proposition}[Modular Time Equivalence]​
+\label{prop:modular}​
+Let $|\Psi\rangle = \sum_k \alpha_k |n_k\rangle_C \otimes 
+|E_k\rangle_S$ be a globally stationary bipartite state with 
+non-vanishing Schmidt amplitudes 
+. Then the reduced states $\rho_C 
+α𝑘> 0
+= \operatorname{Tr}_S(|\Psi\rangle\langle\Psi|)$ and $\rho_S = 
+\operatorname{Tr}_C(|\Psi\rangle\langle\Psi|)$ define a 
+
+Tomita--Takesaki modular operator 
+ on the support algebra 
+∆Ψ = ρ𝐶⊗ρ𝑆
+−1
+. When the clock-system entanglement spectrum follows a 
+𝐴𝑆= 𝐵(𝐻𝑆)
+Boltzmann distribution 
+, the modular automorphism group 
+|α𝑘|
+2 = 𝑍
+−1𝑒
+−β𝐸𝑘
+ coincides identically with Heisenberg evolution 
+σ𝑠
+Ψ(𝐴𝑆) = ∆Ψ
+𝑖𝑠(𝐼𝐶⊗𝐴𝑆)∆Ψ
+−𝑖𝑠
+under Quadrature Time with 
+.​
+𝑡=−ħβ𝑠
+\end{proposition}​
+​
+\begin{proof}​
+Tracing out 
+ from Eq.~\eqref{eq:entangled_stationary} gives the 
+𝐻𝐶
+faithful reduced system state $\rho_S = \sum_k |\alpha_k|^2 
+|E_k\rangle\langle E_k|_S$, whose modular Hamiltonian is $K_S = -\ln 
+\rho_S = -\sum_k (\ln|\alpha_k|^2)|E_k\rangle\langle E_k|_S$. 
+Substituting 
+ gives 
+. Consequently, for any 
+|α𝑘|
+2 = 𝑍
+−1𝑒
+−β𝐸𝑘
+𝐾𝑆= β𝐻𝑆+ (ln 𝑍)𝐼𝑆
+observable 
+,​
+𝐴𝑆∈𝐴𝑆
+\begin{equation}​
+    \sigma_s^\Psi(A_S) = \rho_S^{is} A_S \rho_S^{-is} = e^{-is K_S} 
+A_S e^{is K_S} = e^{-is\beta \widehat{H}_S} A_S e^{is\beta 
+\widehat{H}_S}.​
+\end{equation}​
+Comparing with the conditional Heisenberg evolution 
+ 
+𝐴𝑆(𝑡) = 𝑒
+𝑖𝐻𝑆𝑡/ħ
+𝐴𝑆𝑒
+−𝑖𝐻𝑆𝑡/ħ
+induced by Theorem~\ref{thm:schrodinger} establishes exact equivalence 
+under 
+.​
+𝑡=−ħβ𝑠
+\end{proof}​
+​
+\subsection{Wigner--Weyl Phase-Space Quadrature (``Squaring the 
+Circle'')}​
+For a continuous -dimensional system 
+, let $\psi(q, 
+𝑛
+𝐻𝑆= 𝐿
+2(𝑅
+𝑛, 𝑑
+𝑛𝑞)
+\theta) = ((\theta|_C \otimes \langle q|_S)|\Psi\rangle$ be the 
+conditional configuration-space wave function at clock angle 
+. The 
+θ ∈𝑆
+1
+conditional Wigner distribution~\cite{Wigner1932} maps the 
+Hilbert-space state quadratically onto the Cartesian phase space 
+:​
+(𝑞, 𝑝) ∈𝑅
+2𝑛
+\begin{equation}​
+    W_\Psi(q, p; \theta) := \frac{1}{(2\pi\hbar)^n} 
+\int_{\mathbb{R}^n} d^n y \, e^{-i p \cdot y / \hbar} \, \psi\!\left(q 
++ \frac{y}{2}, \theta\right) \psi^*\!\left(q - \frac{y}{2}, 
+\theta\right).​
+    \label{eq:wigner_quadrature}​
+\end{equation}​
+Integrating 
+ over all phase space 
+ recovers the clock 
+𝑊Ψ(𝑞, 𝑝; θ)
+(𝑞, 𝑝) ∈𝑅
+2𝑛
+
+quadrature density 
+, while differentiating with 
+2π𝑀Ψ(θ) = ∫𝑑
+𝑛𝑞𝑑
+𝑛𝑝𝑊Ψ(𝑞, 𝑝; θ)
+respect to the clock angle  via Theorem~\ref{thm:schrodinger} yields 
+θ
+the relational Moyal equation:​
+\begin{equation}​
+    \omega \frac{\partial}{\partial \theta} W_\Psi(q, p; \theta) = 
+\{H_S(q, p), W_\Psi(q, p; \theta)\}_{\mathrm{Moyal}} 
+\xrightarrow{\hbar \to 0} \{H_S, W_\Psi\}_{\mathrm{Poisson}}.​
+    \label{eq:moyal_relational}​
+\end{equation}​
+Thus, $|\Psi\rangle$ simultaneously squares the circular clock fiber 
+ 
+𝑆𝐶
+1
+into the temporal measure 
+ and squares the system Hilbert space 
+𝑀Ψ(θ)
+into the symplectic phase-space arena 
+.​
+𝑅
+2𝑛
+​
+%=====================================================================
+=========​
+% SECTION VII: CIRCUIT-QED EXPERIMENTAL PROTOCOL​
+%=====================================================================
+=========​
+\section{Experimental Protocol in Superconducting Circuit QED}​
+\label{sec:experiment}​
+​
+Whereas photonic polarization experiments have demonstrated the ideal 
+kinematic Page--Wootters mechanism in two-qubit 
+systems~\cite{Moreva2014}, testing the Hilbert-Space Quadrature 
+Conjecture requires measuring the finite-clock Lindblad dephasing rate 
+ (Theorem~\ref{thm:lindblad}) as an explicit function of the clock's 
+Γ𝑗𝑘
+quantum energy spread 
+. We propose a superconducting circuit-QED 
+∆𝐸𝐶
+realization:​
+​
+\begin{enumerate}​
+    \item \textbf{Bipartite Hardware (
+):} Couple a 
+𝐻𝐶⊗𝐻𝑆
+frequency-tunable transmon qubit (
+, transition frequency 
+𝐻𝑆= 𝐶
+2
+) dispersively to a high- 3D microwave cavity or coplanar 
+ω𝑠/2π ≈5. 0𝐺𝐻𝑧
+𝑄
+waveguide resonator (
+, frequency 
+, photon number 
+𝐻𝐶
+ω𝑐/2π ≈6. 0𝐺𝐻𝑧
+operator 
+). In the dispersive regime, the interaction Hamiltonian 
+𝑁= 𝑎
+†𝑎
+is​
+    \begin{equation}​
+        \widehat{H}_{\mathrm{int}} = \hbar \chi \, a^\dagger a \, 
+|1\rangle\langle 1|_S,​
+        \label{eq:dispersive_H}​
+    \end{equation}​
+    with dispersive shift 
+. Here, the resonator acts as 
+χ/2π ≈−1. 0𝑀𝐻𝑧
+
+the quantum clock whose phase rotation tracks the relational evolution 
+of the transmon with effective system energy splitting 
+.​
+𝐸1 −𝐸0 = ħχ𝑒𝑓𝑓
+    \item \textbf{Clock Energy Spread Preparation:} Displace the 
+resonator clock into a coherent state $\vert{}\alpha\rangle_C = 
+e^{-\vert{}\alpha\vert{}^2/2}\sum_{n=0}^\infty 
+\frac{\alpha^n}{\sqrt{n!}}\vert{}n\rangle_C$ with tunable mean photon 
+number $\bar{n} = \vert{}\alpha\vert{}^2 \in [10, 10^4]$ and 
+Poissonian number standard deviation 
+, fixing the clock energy 
+∆𝑛=
+𝑛‾
+spread at​
+    \begin{equation}​
+        \Delta E_C = \hbar \omega_c \sqrt{\bar{n}}.​
+    \end{equation}​
+    Simultaneously prepare the transmon in the equatorial 
+superposition $\vert{}\psi_0\rangle_S = 
+\frac{1}{\sqrt{2}}(\vert{}0\rangle + \vert{}1\rangle)_S$ via a 
+ 
+π/2
+pulse.​
+    \item \textbf{Quadrature Readout and Scaling Law:} Perform 
+phase-sensitive heterodyne detection on the cavity leakage field 
+(implementing the covariant phase POVM 
+ on 
+) conditioned 
+𝐸(𝑑θ)
+𝑆
+1
+alongside dispersive state tomography of the transmon's off-diagonal 
+coherence $\vert{}\rho_{01}(\theta)\vert{}$. By 
+Theorem~\ref{thm:lindblad}, the intrinsic clock-induced dephasing rate 
+scales inversely with 
+:​
+𝑛‾
+    \begin{equation}​
+        \Gamma_{01}^{\mathrm{clock}}(\bar{n}) = \frac{(E_1 - 
+E_0)^2}{2\hbar \Delta E_C} \propto \frac{\chi^2}{2\omega_c 
+\sqrt{\bar{n}}}.​
+        \label{eq:circuit_qed_scaling}​
+    \end{equation}​
+    Sweeping  across three orders of magnitude while holding cavity 
+𝑛‾
+temperature and intrinsic qubit 
+ constant isolates the 
+ 
+𝑇2
+*
+𝑛‾
+−1/2
+quadrature dephasing signature from standard thermal photon shot noise 
+(which increases with ).​
+𝑛‾
+\end{enumerate}​
+​
+%=====================================================================
+=========​
+% SECTION VIII: CONCLUSION​
+%=====================================================================
+=========​
+\section{Conclusion}​
+\label{sec:conclusion}​
+​
+By separating the universal cover constraint 
+
+$\widehat{C}_{\mathrm{univ}}|\Psi\rangle = 0$ on 
+ from the 
+𝐿
+2(𝑅)
+covariant Holevo phase POVM 
+ on the Hardy space 
+ via the 
+𝐸(𝑑θ)
+𝐻
+2(𝑆
+1)
+Bloch--Floquet winding quotient 
+, the Hilbert-Space Quadrature 
+Πω
+Conjecture provides a mathematically self-consistent foundation for 
+emergent quantum time. Standard unitary Schr\"odinger dynamics emerges 
+conditionally in the infinite-bandwidth clock limit 
+(Theorem~\ref{thm:schrodinger}), while physical clocks with finite 
+energy spread 
+ obey a completely positive double-commutator Lindblad 
+∆𝐸𝐶
+master equation (Theorem~\ref{thm:lindblad}) that is directly testable 
+in contemporary circuit-QED architectures.​
+​
+%=====================================================================
+=========​
+% SECTION IX: RELATIVISTIC SPACETIME EXTENSION​
+%=====================================================================
+=========​
+\section{Relativistic Spacetime Extension: Klein--Gordon, Dirac, and 
+Proper-Time Quadrature}​
+\label{sec:relativistic}​
+​
+\subsection{The Klein--Gordon Mass-Shell Constraint and Hardy-Space 
+Selection}​
+In 
+-dimensional Minkowski spacetime with metric 
+(1 + 3)
+, let the universal kinematical Hilbert space be 
+ηµν = 𝑑𝑖𝑎𝑔(+ 1, −1, −1, −1)
+, with temporal momentum 
+, spatial 
+𝐻𝑈
+𝑘𝑖𝑛= 𝐿
+2(𝑅, 𝑑𝑥
+0) ⊗𝐿
+2(𝑅
+3, 𝑑
+3𝑥) ⊗𝐻𝑖𝑛𝑡
+𝑃0 =−1
+𝑐𝑃𝑡
+momentum 
+, and mass operator 
+. Relativistic 
+𝑃=−𝑖ħ∇
+𝑀= 𝑚𝐼𝑖𝑛𝑡+
+1
+𝑐
+2 𝐻𝑖𝑛𝑡
+reparameterization invariance imposes the quadratic Klein--Gordon 
+mass-shell constraint:​
+\begin{equation}​
+    \widehat{C}_{\mathrm{KG}}|\Psi\rangle = \left(\widehat{P}_\mu 
+\widehat{P}^\mu - \widehat{M}^2 c^2\right)|\Psi\rangle = 
+\frac{1}{c^2}\widehat{C}_+ \widehat{C}_- |\Psi\rangle = 0, \qquad 
+\widehat{C}_\pm := \widehat{P}_t \otimes I_S \pm I_C \otimes 
+\widehat{H}_{\mathrm{rel}},​
+    \label{eq:kg_constraint}​
+\end{equation}​
+where 
+.​
+𝐻𝑟𝑒𝑙: =+
+𝑐
+2𝑃
+2
++ 𝑀
+2
+𝑐
+4 > 0
+​
+\begin{theorem}[Hardy-Space Selection of Positive Frequency and 
+Positive-Definite Klein--Gordon Quadrature]​
+\label{thm:kg_hardy}​
+Under the Bloch--Floquet winding quotient 
+ followed by 
+Πω: 𝐿
+2(𝑅) →𝐿
+2(𝑆
+1)
+
+the orthogonal Hardy-space projection 
+ onto 
+𝑃+: 𝐿
+2(𝑆
+1) →𝐻
+2(𝑆
+1)
+lower-bounded clock states ($\operatorname{Spec}(\widehat{N}) = 
+\mathbb{N}_0$), the negative-frequency mass-shell sheet 
+ is 
+ker(𝐶−)
+annihilated identically: 
+. The surviving physical 
+(𝑃+ ⊗𝐼𝑆) ker(𝐶−) = {0}
+subspace 
+ yields a conditional wave function 
+𝐻+ = ker(ħω𝑁⊗𝐼𝑆−𝐼𝐶⊗𝐻𝑟𝑒𝑙)
+$|\psi(\theta)\rangle = ((\theta|_C \otimes I_S)|\Psi_+\rangle$ 
+obeying the positive-frequency relativistic Schr\"odinger--Foldy 
+equation (
+),​
+𝑡= θ/ω
+\begin{equation}​
+    i\hbar \frac{\partial}{\partial t} |\psi(t)\rangle = 
+\sqrt{c^2\widehat{\mathbf{P}}^2 + \widehat{M}^2 c^4}\,|\psi(t)\rangle,​
+\end{equation}​
+with a strictly nonnegative, conserved conditional spatial quadrature 
+density $\rho_{\mathrm{KG}}(\mathbf{x}|\theta) = 
+|\langle\mathbf{x}|\psi(\theta)\rangle|^2 / \|\psi(\theta)\|^2 \ge 0$.​
+\end{theorem}​
+​
+\begin{proof}​
+In the Fourier-momentum basis $\{\vert{}n\rangle_C \otimes 
+\vert{}\mathbf{p},k\rangle_S\}$, the factored constraint 
+$\widehat{C}_\pm\vert{}\Psi_\pm\rangle = 0$ enforces 
+ with 
+ħω𝑛=± 𝐸𝑝,𝑘
+. Because the negative-frequency sheet requires 
+𝐸𝑝,𝑘=
+𝑐
+2𝑝
+2 + 𝑀𝑘
+2𝑐
+4 > 0
+, the Hardy projector $\mathbb{P}_+ = \sum_{n=0}^\infty 
+𝑛=−𝐸𝑝,𝑘/(ħω) < 0
+\vert{}n\rangle\langle n\vert{}_C$ annihilates $\vert{}\Psi_-\rangle$, 
+isolating $\vert{}\Psi_+\rangle$ and rendering the conditional spatial 
+probability density a positive-definite Hilbert-space norm square on 𝐻𝑆
+.​
+\end{proof}​
+​
+\subsection{The Dirac Constraint and Finite-Clock Damping of 
+Zitterbewegung}​
+For spin-
+ fermions on 
+, multiplying the covariant Dirac 
+1
+2
+𝐻𝑆= 𝐿
+2(𝑅
+3) ⊗𝐶
+4
+constraint $(\gamma^\mu \widehat{P}_\mu - mc I_4)|\Psi\rangle = 0$ by 
+ yields​
+𝑐γ
+0
+\begin{equation}​
+    \widehat{C}_{\mathrm{Dirac}}|\Psi\rangle = \left(\widehat{P}_t 
+\otimes I_S + I_C \otimes \widehat{H}_D\right)|\Psi\rangle = 0, \qquad 
+\widehat{H}_D = c\,\bm{\alpha}\cdot\widehat{\mathbf{P}} + \beta m c^2.​
+    \label{eq:dirac_constraint}​
+\end{equation}​
+By Theorem~\ref{thm:lindblad}, for a clock with finite energy spread 
+, coherent *Zitterbewegung* oscillations between positive- and 
+∆𝐸𝐶
+
+negative-energy Dirac spinor branches (
+) experience 
+𝐸+ −𝐸−= 2𝐸𝑝≥2𝑚𝑐
+2
+intrinsic Lindblad dephasing at the rate​
+\begin{equation}​
+    \Gamma_{\mathrm{Zitt}}(\mathbf{p}) = 
+\frac{(2E_{\mathbf{p}})^2}{2\hbar \Delta E_C} = 
+\frac{2(c^2\mathbf{p}^2 + m^2c^4)}{\hbar \Delta E_C} \ge 
+\frac{2m^2c^4}{\hbar \Delta E_C},​
+    \label{eq:zitt_damping}​
+\end{equation}​
+dynamically projecting the conditional evolution onto the smooth 
+Foldy--Wouthuysen positive-energy sector whenever 
+.​
+∆𝐸𝐶≪2𝑚𝑐
+2
+​
+\subsection{Internal Proper-Time Quadrature and Quantum Lorentz 
+Dilation}​
+When an internal Hardy clock 
+ with Hamiltonian 
+ 
+𝐻𝐶,𝑖𝑛𝑡= 𝐻
+2(𝑆
+1)
+𝐻𝑖𝑛𝑡= ħω0𝑁𝑖𝑛𝑡
+is carried by a moving particle of rest mass 
+, mass-energy 
+𝑚
+equivalence 
+ yields the first-order expansion​
+𝑀= 𝑚𝐼+ 𝐻𝑖𝑛𝑡/𝑐
+2
+\begin{equation}​
+    \widehat{H}_{\mathrm{rel}} = \widehat{E}_{\mathbf{P}} \otimes 
+I_{\mathrm{int}} + \widehat{\gamma}(\widehat{\mathbf{P}})^{-1} \otimes 
+\hbar\omega_0 \widehat{N}_{\mathrm{int}} + 
+\mathcal{O}\!\left(\frac{\widehat{H}_{\mathrm{int}}^2}{mc^2}\right), 
+\qquad \widehat{\gamma}(\widehat{\mathbf{P}}) = \sqrt{1 + 
+\frac{\widehat{\mathbf{P}}^2}{m^2 c^2}}.​
+    \label{eq:proper_time_hamiltonian}​
+\end{equation}​
+Conditioning on the laboratory reference clock  and reading out the 
+𝑡
+internal proper-time POVM 
+ shifts the conditional proper-time 
+𝐸𝑖𝑛𝑡(𝑑τ)
+distribution to $\langle \tau(t) \rangle = \langle 
+\widehat{\gamma}^{-1} \rangle t$, while a center-of-mass momentum 
+superposition $c_1|\mathbf{p}_1\rangle + c_2|\mathbf{p}_2\rangle$ 
+modulates the internal clock coherence by the quantum twin-paradox 
+visibility factor 
+|𝑐1|
+4 + |𝑐2|
+4 + 2|𝑐1|
+2|𝑐2|
+2 cos[(𝑛−𝑚)ω0(γ1
+−1 −γ2
+−1)𝑡]
+~\cite{SmithAhmadi2020}.​
+​
+\subsection{Stationary Curved Spacetime: Schwarzschild Redshift, 
+Twin-Shell Decoherence, and Horizon Dephasing}​
+\label{subsec:curved_spacetime}​
+​
+Let 
+ be a static, globally hyperbolic spacetime with timelike 
+(𝑀, 𝑔µν)
+Killing vector 
+ (
+) and line element​
+ξ
+µ = (∂𝑥
+0)
+µ
+𝑥
+0 = 𝑐𝑡
+\begin{equation}​
+    ds^2 = N(\mathbf{x})^2 c^2 dt^2 - h_{ij}(\mathbf{x})\,dx^i dx^j, 
+
+\qquad N(\mathbf{x}) := \sqrt{g_{00}(\mathbf{x})},​
+    \label{eq:static_metric}​
+\end{equation}​
+which for the exterior Schwarzschild geometry (
+) has 
+𝑟> 𝑟𝑠: = 2𝐺𝑀𝐺/𝑐
+2
+lapse function 
+. Multiplying the covariant Klein--Gordon 
+𝑁(𝑟) =
+1 −𝑟𝑠/𝑟
+mass-shell constraint by 
+ and applying the Bloch--Floquet winding 
+𝑐
+2𝑁(𝑥)
+2
+quotient 
+ and Hardy projection 
+ onto an asymptotic reference clock 
+Πω∞
+𝑃+
+ at spatial infinity (
+) yields the positive-frequency 
+𝐻𝐶,∞= 𝐻
+2(𝑆
+1)
+𝑁(∞) = 1
+curved-spacetime constraint​
+\begin{equation}​
+    \widehat{C}_+^{\mathrm{grav}}|\Psi_+\rangle = 
+\left(\hbar\omega_\infty \widehat{N}_\infty \otimes I_S - I_C \otimes 
+\widehat{H}_{\mathrm{grav}}\right)|\Psi_+\rangle = 0, \qquad 
+\widehat{H}_{\mathrm{grav}} = 
+\sqrt{N(\widehat{\mathbf{X}})}{\left(c^2\widehat{\mathbf{P}}_\Sigma^2 
++ \widehat{M}^2 c^4\right)}N(\widehat{\mathbf{X}}).​
+    \label{eq:grav_constraint}​
+\end{equation}​
+​
+\begin{theorem}[Emergent Gravitational Time Dilation and Twin-Shell 
+Quadrature Decoherence]​
+\label{thm:grav_dilation}​
+Consider a quantum probe of rest mass 
+ carrying an internal circular 
+𝑚
+Hardy clock 
+ with internal Hamiltonian 
+, total 
+𝐻𝐶,𝑖𝑛𝑡= 𝐻
+2(𝑆
+1)
+𝐻𝑖𝑛𝑡= ħω0𝑁𝑖𝑛𝑡
+invariant mass 
+, and Holevo proper-time POVM 
+. In 
+𝑀= 𝑚𝐼𝑖𝑛𝑡+ 𝐻𝑖𝑛𝑡/𝑐
+2
+𝐸𝑖𝑛𝑡(𝑑τ)
+the quasi-static regime ($\langle 
+c^2\widehat{\mathbf{P}}_\Sigma^2\rangle \ll m^2c^4$, 
+$\hbar\omega_0\langle\widehat{N}_{\mathrm{int}}\rangle \ll mc^2$), the 
+Killing Hamiltonian expands as 
+. 
+𝐻𝑔𝑟𝑎𝑣≈𝐻𝑐𝑚
+𝑔𝑟𝑎𝑣
+⊗𝐼𝑖𝑛𝑡+ 𝑁(𝑋) ⊗ħω0𝑁𝑖𝑛𝑡
+Conditioning on the asymptotic clock reading 
+ yields:​
+𝑡= θ∞/ω∞
+\begin{enumerate}​
+    \item \textbf{Schwarzschild Proper-Time Shift:} For a probe 
+localized at radius 
+, the conditional proper-time quadrature 
+𝑟> 𝑟𝑠
+distribution shifts according to the exact Tolman--Ehrenfest redshift 
+relation:​
+    \begin{equation}​
+        Q_\Psi(\tau | t, r) = Q_\Psi\!\left(\tau - \sqrt{1 - 
+\frac{r_s}{r}}\,t \,\middle|\, 0, r\right), \qquad \langle \tau(t) 
+\rangle_r = \sqrt{1 - \frac{r_s}{r}}\,t.​
+        \label{eq:schwarzschild_shift}​
+    \end{equation}​
+    \item \textbf{Twin-Shell Gravitational Decoherence:} If the 
+
+probe's center of mass is prepared in a coherent spatial superposition 
+$\frac{1}{\sqrt{2}}(\vert{}r_1\rangle + \vert{}r_2\rangle)$ across two 
+radial shells with redshift differential 
+ and 
+∆𝑁12 =
+1 −𝑟𝑠/𝑟2 −
+1 −𝑟𝑠/𝑟1
+internal Gaussian energy spread 
+, tracing out 
+ 
+∆𝐸𝑖𝑛𝑡= ħω0∆𝑛𝑖𝑛𝑡
+𝐻𝐶,𝑖𝑛𝑡
+suppresses the spatial interferometric visibility 
+as~\cite{Zych2011,Pikovski2015}:​
+    \begin{equation}​
+        \mathcal{V}_{\mathrm{cm}}(t) = 2|\langle r_1 | 
+\rho_{\mathrm{cm}}(t) | r_2 \rangle| = \exp\!\left(-\frac{(\Delta 
+E_{\mathrm{int}})^2 (\Delta N_{12})^2 t^2}{2\hbar^2}\right) = 
+\exp\!\left(-\frac{t^2}{\tau_{\mathrm{grav}}^2}\right), \qquad 
+\tau_{\mathrm{grav}} = \frac{\sqrt{2}\,\hbar}{\Delta 
+E_{\mathrm{int}}|\Delta N_{12}|}.​
+        \label{eq:twin_shell_visibility}​
+    \end{equation}​
+    \item \textbf{Non-Local Lindblad Horizon Divergence:} When a clock 
+at radius 
+ with local proper energy spread 
+ parameterizes the 
+𝑟𝐶> 𝑟𝑠
+∆𝐸𝐶
+𝑙𝑜𝑐
+evolution of a system at radius 
+, the coordinate-time Lindblad 
+𝑟𝑆> 𝑟𝑠
+dephasing rate of Theorem~\ref{thm:lindblad} becomes​
+    \begin{equation}​
+        \Gamma_{jk}^{\mathrm{grav}}(r_S, r_C) = 
+\frac{N(r_S)^2}{N(r_C)}\frac{(E_j^{\mathrm{loc}} - 
+E_k^{\mathrm{loc}})^2}{2\hbar \Delta E_C^{\mathrm{loc}}} = \frac{1 - 
+r_s/r_S}{\sqrt{1 - r_s/r_C}}\,\Gamma_{jk}^{(0)}.​
+        \label{eq:horizon_lindblad}​
+    \end{equation}​
+    For co-located systems (
+), transforming to local proper 
+𝑟𝑆= 𝑟𝐶= 𝑟
+time 
+ cancels 
+ identically, preserving the Einstein 
+𝑑τ =
+1 −𝑟𝑠/𝑟𝑑𝑡
+𝑁(𝑟)
+Equivalence Principle; whereas for a near-horizon clock (
+) timing 
+𝑟𝐶→𝑟𝑠
++
+a distant system (
+), 
+~\cite{CastroRuiz2017}.​
+𝑟𝑆> 𝑟𝑠
+Γ𝑗𝑘
+𝑔𝑟𝑎𝑣∝(1 −𝑟𝑠/𝑟𝐶)
+−1/2 →∞
+\end{enumerate}​
+\end{theorem}​
+​
+\begin{proof}​
+Conditioning on asymptotic time  generates the unitary flow 
+. 
+𝑡
+𝑒
+−𝑖𝐻𝑔𝑟𝑎𝑣𝑡/ħ
+On a single radial shell $\vert{}r\rangle$, the internal clock state 
+$\vert{}n\rangle_{\mathrm{int}}$ acquires the redshifted phase 𝑒
+−𝑖𝑛ω0𝑁(𝑟)𝑡
+, so projecting onto the Holevo bra 
+$(\theta_{\mathrm{int}}\vert{}_{\mathrm{int}} = \sum_{n=0}^\infty 
+e^{-in\omega_0\tau}\langle n\vert{}_{\mathrm{int}}$ shifts the 
+argument of the quadrature density from  to 
+, proving 
+τ
+τ −𝑁(𝑟)𝑡
+Eq.~\eqref{eq:schwarzschild_shift}. For the superposition 
+
+$\frac{1}{\sqrt{2}}(\vert{}r_1\rangle + 
+\vert{}r_2\rangle)\otimes\sum_n c_n\vert{}n\rangle_{\mathrm{int}}$, 
+tracing out 
+ yields $\langle 
+𝐻𝐶,𝑖𝑛𝑡
+r_1\vert{}\rho_{\mathrm{cm}}(t)\vert{}r_2\rangle = 
+\frac{1}{2}e^{imc^2\Delta N_{12}t/\hbar}\sum_{n=0}^\infty 
+\vert{}c_n\vert{}^2 e^{in\omega_0\Delta N_{12}t}$, whose Gaussian 
+Fourier transform over $\vert{}c_n\vert{}^2$ gives 
+Eq.~\eqref{eq:twin_shell_visibility}. Finally, substituting the 
+redshifted Killing energy gaps 
+ and the 
+∆𝐸𝑗𝑘
+𝐾𝑖𝑙𝑙𝑖𝑛𝑔= 𝑁(𝑟𝑆)(𝐸𝑗
+𝑙𝑜𝑐−𝐸𝑘
+𝑙𝑜𝑐)
+redshifted clock correlation scale 
+ into 
+𝑇𝐶
+𝐾𝑖𝑙𝑙𝑖𝑛𝑔= ħ/[𝑁(𝑟𝐶)∆𝐸𝐶
+𝑙𝑜𝑐]
+Eq.~\eqref{eq:dephasing_rate} yields Eq.~\eqref{eq:horizon_lindblad}.​
+\end{proof}​
+​
+\subsection{Cosmological Minisuperspace: Scalar Field as a Quantum 
+Clock for the Scale Factor}​
+\label{subsec:minisuperspace}​
+​
+In canonical quantum cosmology, the Wheeler--DeWitt equation for a 
+flat Friedmann--Robertson--Walker (FRW) universe sourced by a 
+homogeneous scalar field  with potential 
+ is given 
+φ
+𝑉(φ)
+by~\cite{DeWitt1967,Kuchar1992}​
+\begin{equation}​
+    \widehat{H}_{\mathrm{WDW}} |\Psi\rangle = \left[ \frac{1}{2m_0} 
+a^{-p} \frac{\partial}{\partial a} \left( a^p \frac{\partial}{\partial 
+a} \right) - \frac{1}{2a^3} \frac{\partial^2}{\partial \varphi^2} + 
+a^3 V(\varphi) \right] |\Psi(a, \varphi)\rangle = 0,​
+    \label{eq:wdw_frw_app}​
+\end{equation}​
+where 
+. Treating the homogeneous scalar field  as the 
+𝑚0 = 3π/(2𝐺)
+φ
+internal quantum clock sector (
+) and the scale factor  as the 
+𝐻𝐶= 𝐿
+2(𝑅)
+𝑎
+system sector (
+), conditioning on a scalar field clock reading via 
+𝐻𝑆
+the quadrature map $E(d\varphi) = 
+|\varphi\rangle\langle\varphi|\,d\varphi$ yields the conditional scale 
+factor state $|\psi(a|\varphi)\rangle = \langle\varphi|\Psi\rangle$. 
+Under the adiabatic Born--Oppenheimer expansion, 
+$|\psi(a|\varphi)\rangle$ satisfies the emergent Tomonaga--Schwinger 
+cosmological Schr\"odinger equation:​
+\begin{equation}​
+    i \frac{\partial}{\partial \varphi} |\psi(a | \varphi)\rangle = 
+\widehat{H}_{\mathrm{cosmo}}(a, \varphi) |\psi(a | \varphi)\rangle, 
+\qquad \widehat{H}_{\mathrm{cosmo}} = \sqrt{\frac{2m_0}{a^3} \left(a^3 
+V(\varphi) - \frac{1}{2m_0} a^{-p}\partial_a(a^p \partial_a)\right)}.​
+    \label{eq:cosmo_schrodinger_app}​
+\end{equation}​
+Furthermore, finite scalar-field clock uncertainty 
+ induces quantum 
+∆φ
+
+gravitational backreaction governed by Theorem~\ref{thm:lindblad}, 
+predicting an intrinsic Hubble expansion variance 
+ that dynamically suppresses macroscopic 
+σ𝐻
+2 = (∂φ𝐻)
+2(∆φ)
+2 + γ𝑐𝑜𝑠𝑚𝑜/(∆φ)
+2
+geometry superpositions and drives emergent classical spacetime.​
+​
+\subsection{The Hartle--Hawking No-Boundary Wave Function via 
+Covariant Phase POVMs}​
+\label{subsec:hartle_hawking}​
+​
+In quantum cosmology, the Hartle--Hawking no-boundary wave function is 
+defined by the Euclidean path integral over compact 4-geometries  and 
+𝑔
+fields  bounded only by spatial data 
+~\cite{HartleHawking1983}:​
+ϕ
+(ℎ𝑖𝑗, φ)
+\begin{equation}​
+    \Psi_{\mathrm{HH}}[h_{ij}, \varphi] = \int_{\partial g = (h, 
+\varphi)} \mathcal{D}g \, \mathcal{D}\phi \, \exp\left(-I_E[g, 
+\phi]\right).​
+    \label{eq:hh_path_app}​
+\end{equation}​
+Within the Hilbert-Space Quadrature Conjecture, Euclidean proper time 
+is the circular phase parameter 
+ of an internal Euclidean clock 
+θ𝐸∈𝑆𝐸
+1
+sector 
+, and the no-boundary wave function is a 
+𝐻𝐶,𝐸= 𝐿
+2(𝑆𝐸
+1)
+state-generated quadrature projection.​
+​
+\begin{theorem}[Quadrature Formulation of the Hartle--Hawking State]​
+\label{thm:hartle_hawking}​
+Let 
+ be the universe comprising the Euclidean clock 
+𝐻𝑈= 𝐻𝐶,𝐸⊗𝐻𝑔𝑒𝑜𝑚
+circle and gravitational superspace. The no-boundary state 
+$|\Psi_{\mathrm{NB}}\rangle$ is generated by integrating the covariant 
+Euclidean phase POVM 
+ over 
+ anchored at a smooth 
+𝐸𝐸(𝑑θ𝐸) =
+1
+2π |θ𝐸)(θ𝐸|𝑑θ𝐸
+𝑆𝐸
+1
+regular cap:​
+\begin{equation}​
+    |\Psi_{\mathrm{NB}}\rangle = \int_0^{2\pi} \frac{d\theta_E}{2\pi} 
+\, |\theta_E)_C \otimes \left( \int_{\mathrm{cap}}^{\theta_E} 
+\mathcal{D}g\,\mathcal{D}\phi \, e^{-I_E[g,\phi]} 
+|\mathrm{geom}(\theta_E)\rangle \right),​
+    \label{eq:nb_state_app}​
+\end{equation}​
+such that $\Psi_{\mathrm{HH}}[h_{ij}, \varphi; \theta_E] = \langle 
+\theta_E, h_{ij}, \varphi | \Psi_{\mathrm{NB}} \rangle$. The 
+transition from Euclidean no-boundary quantum cosmology to Lorentzian 
+real-time expansion corresponds operationally to the analytic 
+unwrapping of the Euclidean clock phase POVM into the universal cover 
+group-averaged constraint 
+ of 
+𝑃𝑝ℎ𝑦𝑠= δ(𝐶𝑢𝑛𝑖𝑣)
+Section~\ref{sec:universal_cover}.​
+
+\end{theorem}​
+​
+\subsection{Near-Horizon Limit (
+), Bisognano--Wichmann Theorem, 
+𝑟𝐶→𝑟𝑠
++
+and Hawking--Unruh Temperature}​
+\label{subsec:near_horizon}​
+​
+Near the Schwarzschild event horizon 
+ (
+), the lapse 
+𝑟= 𝑟𝑠+ ρ
+ρ ≪𝑟𝑠
+function is 
+ with surface gravity 
+, reducing the 
+𝑁(𝑟) ≈κρ/𝑐
+2
+κ = 𝑐
+4/(4𝐺𝑀𝐺)
+metric to Rindler spacetime. By the Bisognano--Wichmann theorem, the 
+modular operator 
+ of Proposition~\ref{prop:modular} is generated by 
+∆Ψ
+the Rindler boost operator .​
+𝐾
+​
+\begin{theorem}[Near-Horizon Modular Flow and Hawking--Unruh 
+Temperature]​
+\label{thm:near_horizon}​
+Restricting the universal state $|\Psi\rangle$ to the near-horizon 
+Rindler wedge yields a modular KMS thermal state with period 
+. 
+∆𝑠= 2π
+Identifying modular flow with Quadrature Time via 
+ yields the 
+𝑡=−ħβ𝑠
+Hawking--Unruh temperature:​
+\begin{equation}​
+    T_H = \frac{\hbar \kappa}{2\pi k_B c} = \frac{\hbar c^3}{8\pi G 
+M_G k_B}.​
+    \label{eq:hawking_unruh}​
+\end{equation}​
+Simultaneously, the near-horizon limit of the gravitational Lindblad 
+rate (Eq.~\eqref{eq:horizon_lindblad}) diverges as 
+ as 
+Γ𝑗𝑘
+𝑔𝑟𝑎𝑣∝ρ
+−1/2 →∞
+, reflecting infinite thermal blueshifting of internal clock 
+ρ →0
+fluctuations at the event horizon.​
+\end{theorem}​
+​
+%=====================================================================
+=========​
+% APPENDIX A: PYTHON NUMERICAL MODEL​
+%=====================================================================
+=========​
+\appendix​
+\section{Discrete Numerical Model and Python Implementation (
+)}​
+𝐶
+𝑁⊗𝐶
+2
+\label{app:python}​
+​
+To illustrate the convergence of the discrete Pegg--Barnett clock 
+ to continuous Schr\"odinger evolution as 
+, as well as the 
+𝐻𝐶
+(𝑁) = 𝐶
+𝑁
+𝑁→∞
+exact finite-clock dephasing envelope 
+ where 
+|ρ01
+𝑓𝑖𝑛𝑖𝑡𝑒(θ)| = 1
+2 exp(−ω𝑟𝑎𝑡𝑖𝑜
+2
+σθ
+2/2)
+, the listing below provides a self-contained Python 
+σθ = (2∆𝑛)
+−1
+
+simulation of the bipartite state $|\Psi\rangle \in \mathbb{C}^N 
+\otimes \mathbb{C}^2$.​
+​
+\begin{lstlisting}[style=pythonstyle, caption={Self-contained Python 
+simulation of the discrete 
+ Quadrature Time model, demonstrating 
+𝐶
+𝑁⊗𝐶
+2
+exact bipartite conditioning, finite-clock Lindblad dephasing, and 
+periodic recurrence on 
+.}]​
+𝑆
+1
+import numpy as np​
+import matplotlib.pyplot as plt​
+​
+def exact_bipartite_quadrature(N=128, Delta_n=8.0, omega_ratio=1.0):​
+    """​
+    Computes the exact conditional quadrature dynamics directly from a​
+    bipartite entangled state |Psi> in C^N (clock) x C^2 (system)​
+    using a covariant smeared clock POVM of energy spread Delta_n.​
+    """​
+    theta = 2.0 * np.pi * np.arange(N) / N​
+    n = np.arange(N)​
+    n0 = N // 2​
+​
+    # 1. Clock Readout POVM envelope with energy spread Delta_n​
+    #    Intrinsic phase uncertainty: sigma_theta = 1 / (2 * Delta_n)​
+    env_n = np.exp(-(n - n0)**2 / (4.0 * max(Delta_n, 1e-6)**2))​
+    env_n /= np.linalg.norm(env_n)​
+​
+    # 2. Ideal conditional qubit history states |psi_ideal(theta_k)>​
+    #    |psi(theta)> = (|0> + exp(-i * omega_ratio * theta)|1>) / 
+sqrt(2)​
+    psi_ideal_theta = np.zeros((N, 2), dtype=complex)​
+    psi_ideal_theta[:, 0] = 1.0 / np.sqrt(2.0)​
+    psi_ideal_theta[:, 1] = np.exp(-1j * omega_ratio * theta) / 
+np.sqrt(2.0)​
+​
+    # 3. Intrinsic Clock Pointer Quadrature Profile G(theta - theta')​
+    pointer_amp = np.fft.ifft(env_n) * np.sqrt(N)​
+    G_profile = np.abs(pointer_amp)**2​
+    G_profile /= G_profile.sum()​
+​
+    # 4. Exact conditional density matrix via cyclic convolution on 
+S^1​
+    rho_ideal = np.einsum("ki,kj->kij", psi_ideal_theta, 
+np.conj(psi_ideal_theta))​
+    rho_finite = np.zeros_like(rho_ideal)​
+    for k_idx in range(N):​
+        weights = np.roll(G_profile, k_idx)​
+        rho_finite[k_idx] = np.einsum("l,lij->ij", weights, rho_ideal)​
+​
+
+    # 5. Analytical Gaussian / Lindblad dephasing prediction​
+    sigma_theta = 1.0 / (2.0 * Delta_n)​
+    analytical_coh = 0.5 * np.exp(-0.5 * (omega_ratio * 
+sigma_theta)**2)​
+​
+    return theta, G_profile, rho_ideal, rho_finite, sigma_theta, 
+analytical_coh​
+​
+​
+if __name__ == "__main__":​
+    N = 128​
+    Delta_n = 4.0​
+    omega_ratio = 2.0​
+​
+    theta, G_prof, rho_id, rho_fin, sig_th, ana_coh = 
+exact_bipartite_quadrature(​
+        N=N, Delta_n=Delta_n, omega_ratio=omega_ratio​
+    )​
+​
+    fig, axs = plt.subplots(1, 2, figsize=(12, 4.5))​
+​
+    # Panel 1: Clock Pointer Quadrature Profile on S^1​
+    axs[0].plot(theta, np.fft.fftshift(G_prof), "o-", markersize=3, 
+color="#1f77b4")​
+    axs[0].set_xlabel(r"Clock Phase Angle 
+")​
+θ ∈[0, 2π)
+    axs[0].set_ylabel(r"Pointer Quadrature 
+")​
+𝐺σθ
+(θ −π)
+    axs[0].set_title(rf"Clock Quadrature Kernel (
+)")​
+𝑁= 𝑁, ∆𝑛= 𝐷𝑒𝑙𝑡𝑎𝑛
+    axs[0].grid(True, alpha=0.3)​
+​
+    # Panel 2: Real Part and Magnitude of Qubit Coherence 
+rho_01(theta)​
+    axs[1].plot(theta, np.real(rho_id[:, 0, 1]), "--", color="gray", 
+alpha=0.7,​
+                label=r"Ideal 
+")​
+𝑅𝑒[ρ01(θ)]
+    axs[1].plot(theta, np.real(rho_fin[:, 0, 1]), "-", 
+color="#d62728", lw=2,​
+                label=r"Finite-Clock 
+")​
+𝑅𝑒[ρ01
+𝑜𝑏𝑠(θ)]
+    axs[1].axhline(ana_coh, color="#2ca02c", ls=":", lw=1.8,​
+                   label=rf"Analytical Envelope 
+")​
+|ρ01| = 𝑎𝑛𝑎𝑐𝑜ℎ:. 4𝑓
+    axs[1].axhline(-ana_coh, color="#2ca02c", ls=":", lw=1.8)​
+    axs[1].set_xlabel(r"Emergent Clock Phase 
+")​
+θ = ω𝑡
+    axs[1].set_ylabel(r"Conditional Coherence 
+")​
+ρ01(θ)
+    axs[1].set_title("Conditional Schr\"odinger Evolution & Clock 
+Dephasing")​
+    axs[1].set_ylim(-0.58, 0.58)​
+
+    axs[1].legend(loc="upper right", fontsize=8)​
+    axs[1].grid(True, alpha=0.3)​
+​
+    plt.tight_layout()​
+    plt.savefig("quadrature_time_simulation.pdf", dpi=300)​
+    plt.show()​
+\end{lstlisting}​
+​
+%=====================================================================
+=========​
+% REFERENCES​
+%=====================================================================
+=========​
+\begin{thebibliography}{99}​
+​
+\bibitem{Pauli1933}​
+W.~Pauli, \emph{Die allgemeinen Prinzipien der Wellenmechanik}, in 
+\emph{Handbuch der Physik}, Vol.~24 (Springer, Berlin, 1933), p.~83.​
+​
+\bibitem{DeWitt1967}​
+B.~S.~DeWitt, Quantum Theory of Gravity. I. The Canonical Theory, 
+Phys.\ Rev.\ \textbf{160}, 1113 (1967).​
+​
+\bibitem{PageWootters1983}​
+D.~N.~Page and W.~K.~Wootters, Evolution without evolution: Dynamics 
+described by stationary observables, Phys.\ Rev.\ D \textbf{27}, 2885 
+(1983).​
+​
+\bibitem{Giovannetti2015}​
+V.~Giovannetti, S.~Lloyd, and L.~Maccone, Quantum time, Phys.\ Rev.\ D 
+\textbf{92}, 045033 (2015).​
+​
+\bibitem{ConnesRovelli1994}​
+A.~Connes and C.~Rovelli, Von Neumann algebra automorphisms and 
+time-thermodynamics relation in generally covariant quantum theories, 
+Class.\ Quantum Grav.\ \textbf{11}, 2899 (1994).​
+​
+\bibitem{Kibble1979}​
+T.~W.~B.~Kibble, Geometrization of quantum mechanics, Commun.\ Math.\ 
+Phys.\ \textbf{65}, 189 (1979).​
+​
+\bibitem{Ashtekar1999}​
+A.~Ashtekar and T.~A.~Schilling, Geometrical formulation of quantum 
+mechanics, in \emph{On Einstein's Path} (Springer, New York, 1999), 
+pp.~23--65.​
+​
+\bibitem{Wigner1932}​
+E.~P.~Wigner, On the quantum correction for thermodynamic equilibrium, 
+
+Phys.\ Rev.\ \textbf{40}, 749 (1932).​
+​
+\bibitem{Holevo1982}​
+A.~S.~Holevo, \emph{Probabilistic and Statistical Aspects of Quantum 
+Theory} (North-Holland, Amsterdam, 1982).​
+​
+\bibitem{SaleckerWigner1958}​
+H.~Salecker and E.~P.~Wigner, Quantum limitations of the measurement 
+of space-time distances, Phys.\ Rev.\ \textbf{109}, 571 (1958).​
+​
+\bibitem{PeggBarnett1989}​
+D.~T.~Pegg and S.~M.~Barnett, Phase properties of the quantized 
+single-mode electromagnetic field, Phys.\ Rev.\ A \textbf{39}, 1665 
+(1989).​
+​
+\bibitem{Marolf1995}​
+D.~Marolf, Quantum observables and recollapsing dynamics, Class.\ 
+Quantum Grav.\ \textbf{12}, 1199 (1995).​
+​
+\bibitem{Gambini2004}​
+R.~Gambini, R.~A.~Porto, and J.~Pullin, Realistic clocks, universal 
+decoherence, and the black hole information paradox, Phys.\ Rev.\ 
+Lett.\ \textbf{93}, 240401 (2004).​
+​
+\bibitem{Milburn1991}​
+G.~J.~Milburn, Intrinsic decoherence in quantum mechanics, Phys.\ 
+Rev.\ A \textbf{44}, 5401 (1991).​
+​
+\bibitem{Moreva2014}​
+E.~Moreva, G.~Brida, M.~Gramegna, V.~Giovannetti, L.~Maccone, and 
+M.~Genovese, Time from quantum entanglement: An experimental 
+illustration, Phys.\ Rev.\ A \textbf{89}, 052122 (2014).​
+​
+\bibitem{SmithAhmadi2020}​
+A.~R.~H.~Smith and M.~Ahmadi, Quantum clocks observe classical and 
+quantum time dilation, Nat.\ Commun.\ \textbf{11}, 5360 (2020).​
+​
+\bibitem{Zych2011}​
+M.~Zych, F.~Costa, I.~Pikovski, and \v{C}.~Brukner, Quantum 
+interferometric visibility as a witness of general relativistic proper 
+time, Nat.\ Commun.\ \textbf{2}, 505 (2011).​
+​
+\bibitem{Pikovski2015}​
+I.~Pikovski, M.~Zych, F.~Costa, and \v{C}.~Brukner, Universal 
+decoherence due to gravitational time dilation, Nat.\ Phys.\ 
+\textbf{11}, 668 (2015).​
+​
+\bibitem{CastroRuiz2017}​
+
+E.~Castro~Ruiz, F.~Giacomini, and \v{C}.~Brukner, Entanglement of 
+quantum clocks through gravity, Proc.\ Natl.\ Acad.\ Sci.\ U.S.A.\ 
+\textbf{114}, E2303 (2017).​
+​
+\bibitem{Kuchar1992}​
+K.~V.~Kucha\v{r}, \emph{Time and interpretations of quantum gravity}, 
+in \emph{Proceedings of the 4th Canadian Conference on General 
+Relativity and Relativistic Astrophysics}, edited by S.~Kunstatter, 
+D.~E.~Vincent, and J.~G.~Williams (World Scientific, Singapore, 1992), 
+pp.~211--314.​
+​
+\bibitem{HartleHawking1983}​
+J.~B.~Hartle and S.~W.~Hawking, Wave function of the universe, Phys.\ 
+Rev.\ D \textbf{28}, 2960 (1983).​
+​
+\end{thebibliography}​
+​
+end{document}​
+ 
