@@ -1,5 +1,36 @@
 # Change Log
 
+## v11: which clocks can be relational clocks, and what tuning buys (2026-10-18)
+
+The previous entries treated the clock quantum $\Delta=\hbar\omega$ as a free design parameter.
+It is not, for any real clock. This entry states the scope condition that follows, and it
+sharpens Prop. 4 rather than adding to it.
+
+### Manuscript (Sec. V.C)
+
+| Addition | Where |
+|---|---|
+| **Lemma (admissibility).** With smallest gap $g$: $\Delta\le g$ suffices for distinct labels; $\Delta\le R/(d-1)$ is necessary; $N\ge1+R/\Delta$ levels are needed. | `lem:admissible` |
+| **Remark (what tuning buys).** A *pinned* quantum is forced to the rounding assignment, so it is confined to the universal $N^{-2}$ and a horizon growing like $N$. The $N^{-4}$ law requires the freedom to sit at a convergent, and then beats the pinned clock by a factor growing like $N^2$. Stated as the scope condition both propositions should be read with. | `rem:tuning` |
+| New Fig. 9 (`fig:tuning`): the two scalings and the $N^2$ gain. The wobble in the pinned curve is Diophantine luck, not noise, and the caption says so. | `scripts/make_figures.py::fig_tuning` |
+
+### Code (v11)
+
+| Addition | Where |
+|---|---|
+| New module `src/qtime/clock_scales.py`: `design_rule`, `admissible` (sufficient test first, then an offset scan between the sufficient and necessary bounds), `levels_needed`, `mean_variance_at_quantum` (offset-averaged, since a clock's zero is not physical), `horizon_at_quantum`, `tuning_gain`, and a table of `PHYSICAL_CLOCKS` with reference quanta. | new |
+| 15 new tests, suite 127 -> **142**. | `tests/test_clock_design.py` |
+
+Two things I got wrong on the way, recorded because they are instructive:
+
+1. My first example spectrum was $(0,0.5,1.0)$ eV, which is *commensurate* -- every quantum fits it
+   exactly and the horizon is infinite. The phenomenon only appears for irrational ratios; the
+   module's examples use $(0,1,\varphi)$.
+2. The gain from tuning is not monotone in $N$: at $N=90$ it dips by an order of magnitude because
+   the pinned levels happen to land almost exactly on integers. That is the same arithmetic that
+   governs the whole series, showing up as scatter, and it is now asserted as a *trend* ($N^2$)
+   rather than as monotonicity.
+
 ## The spiral staircase, and a scope condition from an expanding universe (2026-10-18)
 
 ### Manuscript

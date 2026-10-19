@@ -32,8 +32,9 @@ src/qtime/modular.py        brute-force Tomita-Takesaki modular operator
 src/qtime/estimates.py      all order-of-magnitude numbers quoted in the paper
 src/qtime/clock_design.py   finite-clock design: exact optimum, universal bound, N^-4 law,
                             exact rational arithmetic, optimiser for d >= 4
+src/qtime/clock_scales.py   admissibility of a real clock quantum; what tuning the spacing buys
 scripts/make_figures.py     regenerates figures/*.pdf|png
-tests/                      127 pytest checks: 24 for the paper, 103 for the clock design
+tests/                      142 pytest checks: 24 for the paper, 118 for the clock design
 notebooks/quadrature_time.ipynb  interactive exploration
 notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8, v9) and its README
 notes/                      working notes on ideas outside the manuscript (not claims),

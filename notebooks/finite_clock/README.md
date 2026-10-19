@@ -1,4 +1,4 @@
-# The finite relational clock series (v1 → v9)
+# The finite relational clock series (v1 → v11)
 
 A self-contained, deliberately narrow study of one question:
 
@@ -28,7 +28,7 @@ A(t) = Σ_j p_j e^{−iδ_j t} and the fidelity is F(t) = |A(t)|².
 | `Finite_Relational_Clock_Asymptotics_v8.ipynb` | **The scaling law.** Universal bound, three-level closed form, N⁻⁴ decay with exact constant, the Diophantine reformulation, and an O(N) optimiser that reaches N = 10⁶. | complete |
 | `Finite_Relational_Clock_Exact_Arithmetic_v9.ipynb` | **Exact arithmetic, higher dimensions, and a correction.** Commensurability becomes an exact statement; a general optimiser for d ≥ 4 replaces enumeration; and the exponent turns out to depend on the *spectrum*, not the dimension. | **current** |
 
-Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (103 checks, in
+Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (118 checks, in
 addition to the 24 manuscript tests). Propositions 1–2 and the N⁻⁴ law are now Sec. V.C of
 the manuscript.
 
@@ -115,6 +115,36 @@ by powers of a single quadratic irrational — and in general the rate is set by
 approximation in $d-2$ dimensions, which continued fractions do not describe. Prop. 1 is
 untouched by this: it never used Diophantine structure.
 
+### 5. What tuning the spacing buys (v11)
+
+Prop. 4's $N^{-4}$ law assumes the quantum $\Delta$ is a free design parameter. Real clocks do not
+offer a continuum: a cavity mode, an atomic line, a Zeeman splitting are fixed by nature. Two
+consequences, both exact:
+
+**Admissibility.** With smallest gap $g$: $\Delta\le g$ suffices for distinct labels, $\Delta\le
+R/(d-1)$ is necessary, and $N\ge1+R/\Delta$ levels are required. A quantum above the smallest gap
+cannot in general resolve the levels *at all*, however many levels are available.
+
+**What tuning buys.** A pinned quantum is forced to the rounding assignment, so it is confined to
+the universal $N^{-2}$ variance and a horizon growing only like $N$. The tuned clock reaches $N^{-4}$
+and beats it by a factor growing like $N^2$.
+
+| $N$ | universal bound | pinned quantum | tuned | gain |
+|---|---|---|---|---|
+| 30 | 7.8e-04 | 4.9e-05 | 5.9e-07 | 83 |
+| 300 | 7.3e-06 | 1.1e-06 | 3.9e-11 | 2.8e+04 |
+| 3000 | 7.3e-08 | 1.6e-08 | 2.5e-15 | 6.5e+06 |
+
+Measured slopes: universal −2.03, pinned −1.93, tuned −4.13.
+
+The pinned curve is not smooth — at $N=90$ it dips by an order of magnitude because the levels
+happen to land almost on integers. That is the same Diophantine luck that governs the whole series,
+and it is why the gain is asserted as a *trend* ($N^2$) rather than as monotonicity.
+
+Code: `src/qtime/clock_scales.py`, including a `PHYSICAL_CLOCKS` table (optical, telecom,
+21 cm, caesium hyperfine, Zeeman 1 T, 6 GHz cavity, 5 GHz transmon) so the test can be run against
+real hardware rather than invented numbers.
+
 ## Where it stands
 
 `V*_N` is monotone non-increasing in N and decreases in **plateaus**: a larger clock only
@@ -148,7 +178,7 @@ listed below.
 ## How to pick this up
 
 ```bash
-python -m pytest tests/test_clock_design.py -q     # 103 checks, ~5 s
+python -m pytest tests/test_clock_design.py -q     # 118 checks, ~5 s
 # then, in order: v1, v4, v5, v7, v8, v9
 ```
 

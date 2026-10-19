@@ -20,6 +20,7 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
 from qtime import clock_design as cd  # noqa: E402
+from qtime import clock_scales as cs  # noqa: E402
 from qtime import clocks as qc  # noqa: E402
 from qtime import estimates as est  # noqa: E402
 from qtime import interferometer as ifm  # noqa: E402
@@ -411,6 +412,55 @@ def fig_staircase_conical():
     save(fig, "fig_staircase_conical")
 
 
+# ----------------------------------------------------------------------------
+# Fig. 7  What tuning the spacing buys, and which clocks are admissible
+# ----------------------------------------------------------------------------
+def fig_tuning():
+    phi = (1 + 5**0.5) / 2
+    spec = cd.Spectrum([0.0, 1.0, phi])
+    R = float(phi)
+    Ns = np.unique(np.round(np.geomspace(10, 3000, 14)).astype(int))
+
+    universal = np.array([cd.universal_bound(R, int(N)) for N in Ns])
+    fixed = np.array([cs.mean_variance_at_quantum(spec, R / (N - 1), 401) for N in Ns])
+    tuned = np.array([cd.three_level_optimum(spec, int(N))[0] for N in Ns])
+
+    fig, ax = plt.subplots(1, 2, figsize=(11.4, 4.1))
+
+    ax[0].loglog(Ns, universal, "--", color="0.5", lw=1.2,
+                 label=r"universal bound $R^2/4(N-1)^2$  ($N^{-2}$)")
+    ax[0].loglog(Ns, fixed, "o-", color="C0", ms=4, lw=1.4,
+                 label=r"fixed quantum, zero unknown  ($N^{-2}$)")
+    ax[0].loglog(Ns, tuned, "s-", color="C3", ms=4, lw=1.4,
+                 label=r"tuned quantum (Prop. 4)  ($N^{-4}$)")
+    ax[0].set(xlabel="clock levels $N$", ylabel=r"mismatch variance $V^\star_N$",
+              title="(a) an untunable clock is stuck at $N^{-2}$")
+    ax[0].grid(alpha=0.3)
+    ax[0].legend(fontsize=7.5)
+
+    gains = np.array([cs.tuning_gain(spec, int(N), 401) for N in Ns])
+    ok = np.isfinite(gains) & (gains > 0)
+    ax[1].loglog(Ns[ok], gains[ok], "o-", color="C2", ms=4, lw=1.4)
+    ax[1].loglog(Ns[ok], gains[ok][0] * (Ns[ok] / Ns[ok][0]) ** 2, "k--", lw=1,
+                 label=r"$\propto N^2$")
+    ax[1].set(xlabel="clock levels $N$", ylabel="gain from tuning",
+              title="(b) tuning pays quadratically (scatter is Diophantine luck)")
+    ax[1].grid(alpha=0.3)
+    ax[1].legend(fontsize=8)
+
+    # the two slopes are the claim of the figure
+    slope_fixed = np.polyfit(np.log(Ns), np.log(fixed), 1)[0]
+    slope_tuned = np.polyfit(np.log(Ns), np.log(tuned), 1)[0]
+    assert -2.4 < slope_fixed < -1.6, slope_fixed
+    assert -4.4 < slope_tuned < -3.6, slope_tuned
+    # The gain is *trend* N^2, not monotone: a fixed quantum's accuracy depends on
+    # where the levels happen to fall, so single-N values fluctuate (N = 90 is lucky).
+    slope_gain = np.polyfit(np.log(Ns[ok]), np.log(gains[ok]), 1)[0]
+    assert 1.7 < slope_gain < 2.4, slope_gain
+    fig.tight_layout()
+    save(fig, "fig_tuning")
+
+
 if __name__ == "__main__":
     fig_staircase()
     fig_staircase_conical()
@@ -421,3 +471,4 @@ if __name__ == "__main__":
     fig_cqed()
     fig_clock_scaling()
     fig_clock_dimension()
+    fig_tuning()

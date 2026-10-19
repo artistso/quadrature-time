@@ -540,3 +540,100 @@ def test_expansion_breaks_commensurability_in_order_one_efold():
         nu0 = commensurability_ratio(closed_mode_frequency_s3(k, 1.0), closed_mode_frequency_s3(k, 1.0))
         assert drift_over_efolds(nu0, 1.0)[1] == pytest.approx(np.e)
     assert first_unprotected_efolds(1.0, 0.05) == pytest.approx(np.log(1.05))
+
+
+# ==========================================================================
+# v11: which clocks can be relational clocks, and what tuning buys
+# ==========================================================================
+from qtime.clock_scales import (
+    PHYSICAL_CLOCKS,
+    admissible,
+    design_rule,
+    horizon_at_quantum,
+    labels_for_quantum,
+    levels_needed,
+    mean_variance_at_quantum,
+    quantum_from_energy,
+    quantum_from_wavelength,
+    tuning_gain,
+)
+
+
+GOLDEN = Spectrum([0.0, 1.0, PHI])
+
+
+def test_design_rule_bounds():
+    rule = design_rule(GOLDEN)
+    assert rule["range"] == pytest.approx(PHI)
+    assert rule["min_gap"] == pytest.approx(PHI - 1.0)
+    assert rule["quantum_max_necessary"] == pytest.approx(PHI / 2)
+    # the sufficient quantum is always no larger than the necessary one
+    assert rule["min_gap"] <= rule["quantum_max_necessary"]
+    assert rule["level_floor"] == pytest.approx(1 + np.ceil(PHI / (PHI - 1.0)))
+
+
+def test_a_quantum_at_or_below_the_smallest_gap_separates_every_level():
+    rule = design_rule(GOLDEN)
+    for q in (rule["min_gap"], rule["min_gap"] * 0.5, rule["min_gap"] * 0.01):
+        labels = labels_for_quantum(GOLDEN, q)
+        assert len(set(labels)) == 3
+        assert admissible(GOLDEN, q)
+
+
+def test_a_quantum_larger_than_the_range_is_inadmissible():
+    assert not admissible(GOLDEN, 2.0 * PHI)
+    # three distinct labels need a span of >= 2 bins; 1.01/0.55 = 1.84, so impossible
+    assert not admissible(Spectrum([0.0, 1.0, 1.01]), 0.55)
+    # ... and at 0.5 the span is 2.02 bins, so an offset does work (offset -0.25)
+    assert admissible(Spectrum([0.0, 1.0, 1.01]), 0.5)
+    with pytest.raises(ValueError):
+        admissible(GOLDEN, 0.0)
+
+
+def test_levels_needed_is_one_plus_range_over_quantum():
+    for q in (0.1, 0.01, 0.001):
+        assert levels_needed(GOLDEN, q) == 1 + int(np.ceil(PHI / q))
+    assert levels_needed(GOLDEN, PHI) == 2
+
+
+def test_fixed_quantum_is_limited_to_the_universal_scaling():
+    """A pinned quantum gets V ~ N^-2, not the designed N^-4."""
+    R = float(GOLDEN.energies[-1] - GOLDEN.energies[0])
+    Ns = np.array([50, 150, 450, 1350])
+    fixed = np.array([mean_variance_at_quantum(GOLDEN, R / (N - 1), 601) for N in Ns])
+    assert np.all(np.isfinite(fixed))
+    slope = np.polyfit(np.log(Ns), np.log(fixed), 1)[0]
+    assert -2.4 < slope < -1.6
+
+    tuned = np.array([three_level_optimum(GOLDEN, int(N))[0] for N in Ns])
+    slope_tuned = np.polyfit(np.log(Ns), np.log(tuned), 1)[0]
+    assert -4.4 < slope_tuned < -3.6
+
+
+def test_tuning_gain_grows_like_n_squared():
+    gains = np.array([tuning_gain(GOLDEN, N, 601) for N in (50, 150, 450, 1350)])
+    assert np.all(np.diff(gains) > 0)
+    slope = np.polyfit(np.log([50, 150, 450, 1350]), np.log(gains), 1)[0]
+    assert 1.5 < slope < 2.5          # about N^2, as advertised
+
+
+def test_inadmissible_quantum_has_no_horizon():
+    assert horizon_at_quantum(GOLDEN, 2.0 * PHI) == 0.0
+    assert np.isnan(mean_variance_at_quantum(GOLDEN, 2.0 * PHI))
+
+
+def test_horizon_improves_as_the_quantum_fine_tunes():
+    coarse = horizon_at_quantum(GOLDEN, 0.3, 601)
+    fine = horizon_at_quantum(GOLDEN, 0.0003, 601)
+    assert 0.0 < coarse < fine
+
+
+def test_physical_clock_table_is_sane():
+    assert quantum_from_wavelength(507.0) == pytest.approx(2.445, abs=0.01)      # eV
+    assert quantum_from_wavelength(2.1e8) == pytest.approx(5.9e-6, rel=0.02)    # 21 cm
+    assert quantum_from_energy(1.602176634e-19) == pytest.approx(1.0)
+    # a 1 eV quantum cannot resolve a spectrum whose smallest gap is 0.618 eV
+    assert not admissible(GOLDEN, 1.0)
+    for name, q in PHYSICAL_CLOCKS.items():
+        assert q > 0.0
+        assert isinstance(name, str)
