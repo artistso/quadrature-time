@@ -455,3 +455,88 @@ def test_proportional_stable_supports_six_levels():
     spec = Spectrum([0.0, 1.0, PHI, PHI**2, PHI**3, PHI**4])
     N, V = proportional_curve_stable(spec, 5000)
     assert decay_exponent(N, V) == pytest.approx(-4.0, abs=0.15)
+
+
+# ==========================================================================
+# v10: commensurability in an expanding universe
+# ==========================================================================
+from qtime.clock_design import (
+    closed_mode_frequency_s3,
+    commensurability_ratio,
+    drift_over_efolds,
+    drift_rate,
+    first_unprotected_efolds,
+    scale_factor,
+    winding_envelope,
+)
+
+
+def test_scale_factor_is_normalised_and_increasing():
+    assert scale_factor(0.0) == pytest.approx(1.0)
+    ts = np.linspace(0.0, 3.0, 20)
+    a = np.array([scale_factor(t) for t in ts])
+    assert np.all(np.diff(a) > 0)
+    # de Sitter by default: a = e^{H0 t}
+    assert scale_factor(1.0) == pytest.approx(np.e)
+
+
+def test_scale_factor_matter_plus_lambda_matches_the_ode():
+    H0, om, ol = 1.0, 0.3, 0.7
+    a = lambda t: scale_factor(t, H0=H0, omega_m=om, omega_l=ol)
+    h = 1e-6
+    t = 0.7
+    adot = (a(t + h) - a(t - h)) / (2 * h)
+    # Friedmann: (adot/a)^2 = H0^2 (om a^-3 + ol)
+    assert (adot / a(t)) ** 2 == pytest.approx(H0**2 * (om / a(t) ** 3 + ol), rel=1e-6)
+    with pytest.raises(ValueError):
+        scale_factor(1.0, omega_m=1.0, omega_l=0.0)
+
+
+def test_closed_mode_frequency_scales_inversely_with_a():
+    base = closed_mode_frequency_s3(3, 1.0)
+    for a in (0.5, 1.0, 2.0, 10.0):
+        assert closed_mode_frequency_s3(3, a) == pytest.approx(base / a)
+    assert closed_mode_frequency_s3(2, 1.0) == pytest.approx(np.sqrt(3.0))
+    with pytest.raises(ValueError):
+        closed_mode_frequency_s3(1, 1.0)      # the homogeneous mode has zero frequency
+    with pytest.raises(ValueError):
+        closed_mode_frequency_s3(2, 0.0)
+
+
+def test_winding_envelope_matches_the_manuscript_closed_form():
+    nu = np.linspace(-2, 3, 5001)
+    for M in (1, 4, 25):
+        got = winding_envelope(nu, M)
+        sin_nu = np.sin(np.pi * nu)
+        safe = np.abs(sin_nu) >= 1e-12
+        ref = np.ones_like(nu)
+        ref[safe] = np.abs(np.sin(np.pi * M * nu[safe]) / (M * sin_nu[safe]))
+        assert np.allclose(got, ref)
+        assert got.max() <= 1.0 + 1e-12
+        assert np.allclose(winding_envelope(np.round(nu).astype(float), M), 1.0)
+
+
+def test_commensurability_ratio_and_drift_are_consistent():
+    a, k, dE = 2.0, 3, 5.0
+    omega = closed_mode_frequency_s3(k, a)
+    assert commensurability_ratio(dE, omega) == pytest.approx(dE / omega)
+    # d ln omega / dt = -H  =>  dnu/dt = +nu H
+    nu = commensurability_ratio(dE, omega)
+    assert drift_rate(dE, k, a, hdot_over_h=0.7) == pytest.approx(0.7 * nu)
+    with pytest.raises(ValueError):
+        commensurability_ratio(1.0, 0.0)
+
+
+def test_expansion_breaks_commensurability_in_order_one_efold():
+    """omega ~ 1/a drives nu up like a^1, so a protected coherence is lost fast."""
+    M = 200
+    for nu0 in (1, 2, 3, 10):
+        Ns = np.linspace(0.0, 6.0, 60001)
+        D = winding_envelope(nu0 * np.exp(Ns), M)
+        N_half = Ns[np.argmax(D < 0.5)]
+        assert 0.0 < N_half < 0.01           # under a hundredth of an e-fold
+    # the fraction travelled is mode-independent: nu -> nu e^N
+    for k in (2, 5, 50):
+        nu0 = commensurability_ratio(closed_mode_frequency_s3(k, 1.0), closed_mode_frequency_s3(k, 1.0))
+        assert drift_over_efolds(nu0, 1.0)[1] == pytest.approx(np.e)
+    assert first_unprotected_efolds(1.0, 0.05) == pytest.approx(np.log(1.05))

@@ -1,5 +1,25 @@
 # Change Log
 
+## The spiral staircase, and a scope condition from an expanding universe (2026-10-18)
+
+### Manuscript
+
+| Addition | Where |
+|---|---|
+| New opening to Sec. II: **the clock as a spiral staircase**. Walking along it is unrolled time (the universal cover); from above it is the circle, with the lap unrecoverable, which *is* the winding number; from the side it is a sinusoid, the oscillation a clock represents. Line, circle and oscillation are three projections of one helix, and each projection is a choice of what to forget -- the line forgets nothing and costs a ground state (Sec. III), the circle forgets the lap and costs coherence (Prop. 2), the oscillation keeps neither. | `quadrature_time.tex`, start of Sec. II |
+| New Fig. 3 (`fig:staircase`): the helix, its two projections, and the top view showing four instants at one face point (ties directly to Fig. 1). | `scripts/make_figures.py::fig_staircase` |
+| New Fig. 4 (`fig:staircaseconical`): the vanishing point. A narrowing staircase is a conical helix; its top view is a logarithmic spiral, self-similar under a constant factor per lap, with a turn rate that diverges at the axis. What looks like a walker disappearing into a centre is a fixed point of the projection. Caption claims are asserted in the code against a numerical integration, not against themselves. | `.py::fig_staircase_conical` |
+
+Figure numbers shift again from here on; all cross-references are by label.
+
+### Code
+
+| Addition | Where |
+|---|---|
+| **v10, first step: commensurability drift.** `scale_factor` (de Sitter default, matter+Lambda inverted from the exact integral), `closed_mode_frequency_s3` ($\omega_k=c\sqrt{k^2-1}/a$ on a round $S^3$), `winding_envelope` ($|D_M|$), `commensurability_ratio`, `drift_rate`, `drift_over_efolds`, `first_unprotected_efolds`. | `clock_design.py` |
+| Six new tests (suite 127 -> **133**). | `tests/test_clock_design.py` |
+| **The result is negative, and is written up as such:** since $\omega\propto1/a$ gives $\dot\nu=+\nu H$, a coherence protected at early times is destroyed in **under a hundredth of an e-fold**, independently of mode number, $M$ and coupling. So the drift is a sharp cutoff, not a slow sweep -- a scope condition (commensurability can be used within an era, never across one), not a prediction. Replaces the "worth chasing" note of the previous commit. | `notes/drifting_commensurability.md` |
+
 ## Author sketch -> Figure 1 (2026-10-18)
 
 An author sketch ("2 AM no longer exists") turned out to be a literal illustration of

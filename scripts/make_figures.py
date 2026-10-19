@@ -13,6 +13,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+import pytest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -301,7 +302,118 @@ def fig_clock_cover():
     save(fig, "fig_cover")
 
 
+# ----------------------------------------------------------------------------
+# Fig. 3  The spiral staircase: why the line and the circle are one object
+# ----------------------------------------------------------------------------
+def fig_staircase():
+    """Three views of one clock.
+
+    A uniform staircase is a helix. Along it the height is the unrolled time
+    (the universal cover); from above it is a circle (the clock face, traversed
+    again and again, with no way to say which lap you are on); from the side it
+    is a sinusoid (the oscillation). A staircase that narrows as it rises is a
+    conical helix: from above it is a logarithmic spiral, and the turn rate
+    diverges at the axis, so the walker completes infinitely many turns before
+    arriving and simply fades out of the projection.
+    """
+    th = np.linspace(0.0, 6.0 * np.pi, 900)
+    h = th / (2.0 * np.pi)                      # height = winding number
+    fig = plt.figure(figsize=(13.0, 3.9))
+
+    # ---- (a) the uniform staircase ----
+    ax = fig.add_subplot(1, 3, 1, projection="3d")
+    ax.plot(np.cos(th), np.sin(th), h, color="C0", lw=1.4)
+    walk = np.array([1.0, 2.0]) * np.pi          # the walker
+    ax.plot(np.cos(walk), np.sin(walk), walk / (2 * np.pi), "o", color="C3", ms=8)
+    ax.text(np.cos(walk[1]), np.sin(walk[1]), walk[1] / (2 * np.pi) + 0.25,
+            "walker", color="C3", fontsize=8)
+    ax.set(xlabel=r"$x$", ylabel=r"$y$", zlabel="height = unrolled time")
+    ax.set_title("(a) the staircase itself", fontsize=10)
+    ax.view_init(elev=22, azim=-60)
+    ax.tick_params(labelsize=7)
+
+    # ---- (b) the two projections ----
+    ax1 = fig.add_subplot(1, 3, 2)
+    ax1.plot(th, np.cos(th), color="C0", lw=1.3)
+    ax1.set(xlabel=r"clock angle $\theta$", ylabel=r"height $=\theta/2\pi$")
+    ax1.plot(th, h, color="0.55", ls="--", lw=1.1)
+    ax1.text(0.3, 1.35, "height: keeps counting", fontsize=7.5, color="0.35")
+    ax1.text(0.3, -1.45, "side view: a sinusoid", fontsize=7.5, color="C0")
+    ax1.set_title("(b) the same object, two projections", fontsize=10)
+    ax1.set_ylim(-1.9, 2.1)
+    ax1.grid(alpha=0.25)
+
+    # ---- (c) top view: the ambiguity ----
+    ax2 = fig.add_subplot(1, 3, 3)
+    tt = np.linspace(0, 2 * np.pi, 400)
+    ax2.plot(np.cos(tt), np.sin(tt), color="C0", lw=1.3)
+    for m in range(4):
+        ax2.plot([np.cos(np.pi / 2)], [np.sin(np.pi / 2)], "o", color="C3", ms=7,
+                 alpha=1.0 - 0.2 * m)
+        ax2.annotate(f"lap {m}", (0.0, 1.0), textcoords="offset points",
+                     xytext=(6, 4 - 11 * m), fontsize=7.5, color="C3")
+    ax2.set(xlim=(-1.3, 1.5), ylim=(-1.3, 1.3), aspect="equal",
+            xlabel=r"$x$", ylabel=r"$y$")
+    ax2.set_title("(c) top view: same point, four instants", fontsize=10)
+    ax2.annotate("the face cannot\nsay which lap", (0.05, 0.35), fontsize=7.5, color="0.3")
+    ax2.grid(alpha=0.25)
+    fig.tight_layout()
+    save(fig, "fig_staircase")
+
+
+def fig_staircase_conical():
+    """The vanishing point: a narrowing staircase never lets the walker arrive."""
+    th = np.linspace(0.0, 26.0 * np.pi, 6000)
+    DECAY_PER_TURN = 1.6                        # r shrinks by e^-1.6 per lap
+    b = DECAY_PER_TURN / (2.0 * np.pi)          # log-spiral rate
+    r = np.exp(-b * th)
+    fig = plt.figure(figsize=(9.6, 3.9))
+
+    ax = fig.add_subplot(1, 2, 1, projection="3d")
+    ax.plot(r * np.cos(th), r * np.sin(th), th / (2 * np.pi), color="C3", lw=1.1)
+    z = np.linspace(0.0, 13.0, 60)
+    rr = np.exp(-b * 2 * np.pi * z)
+    for k in range(0, 60, 7):                   # a walker that fades as it climbs
+        ax.plot([rr[k] * np.cos(2 * np.pi * z[k])], [rr[k] * np.sin(2 * np.pi * z[k])],
+                [z[k]], "o", color="C0", ms=6, alpha=1.0 - z[k] / 15.0)
+    ax.set(xlabel=r"$x$", ylabel=r"$y$", zlabel="height")
+    ax.set_title("(a) a narrowing staircase", fontsize=10)
+    ax.view_init(elev=16, azim=-70)
+    ax.tick_params(labelsize=7)
+
+    # (b) the top view is a log spiral, and the turns diverge
+    ax2 = fig.add_subplot(1, 2, 2)
+    ax2.plot(r * np.cos(th), r * np.sin(th), color="C3", lw=1.2)
+    ax2.set(xlim=(-1.05, 1.05), ylim=(-1.05, 1.05), aspect="equal",
+            xlabel=r"$x$", ylabel=r"$y$")
+    ax2.set_title("(b) top view: a logarithmic spiral", fontsize=10)
+    ax2.annotate("self-similar: every lap is the previous\none scaled by "
+                 r"$e^{-2\pi b}$", (0.0, 0.62), fontsize=7.5, color="0.3")
+    ax2.annotate("the axis: angle undefined,\ntick rate divergent",
+                 (0.08, -0.72), fontsize=7.5, color="C3",
+                 arrowprops=dict(arrowstyle="->", color="C3", lw=0.8))
+    ax2.grid(alpha=0.25)
+
+    # Assert the caption's claims. The turns completed by the time the radius has
+    # shrunk to r is -ln(r/r0)/(2 pi b); check that against a numerical integration
+    # of d theta = -dr/(b r) along the sampled curve rather than against itself.
+    turns_from_integral = np.concatenate(
+        [[0.0], np.cumsum(-np.diff(np.log(r)) / b)]
+    ) / (2.0 * np.pi)
+    turns_analytic = -(np.log(r) - np.log(r[0])) / (2.0 * np.pi * b)
+    assert np.allclose(turns_from_integral, turns_analytic, rtol=1e-10, atol=1e-12)
+    assert np.allclose(turns_analytic, th / (2 * np.pi), rtol=1e-12)
+    assert np.exp(-2 * np.pi * b) == pytest.approx(np.exp(-DECAY_PER_TURN), rel=1e-12)
+    # the turns to reach the axis diverge: twice the decades of radius, twice the turns
+    r_half = np.exp(-b * th[len(th) // 2])
+    assert -np.log(r_half**2) / (b) == pytest.approx(2 * (-np.log(r_half) / b), rel=1e-12)
+    fig.tight_layout()
+    save(fig, "fig_staircase_conical")
+
+
 if __name__ == "__main__":
+    fig_staircase()
+    fig_staircase_conical()
     fig_clock_cover()
     fig_conditioning()
     fig_winding()

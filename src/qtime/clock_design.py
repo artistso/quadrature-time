@@ -93,6 +93,14 @@ __all__ = [
     "proportional_curve",
     "proportional_curve_stable",
     "decay_exponent",
+    # v10: commensurability drift in an expanding universe
+    "scale_factor",
+    "closed_mode_frequency_s3",
+    "commensurability_ratio",
+    "winding_envelope",
+    "drift_rate",
+    "drift_over_efolds",
+    "first_unprotected_efolds",
 ]
 
 
@@ -1037,3 +1045,104 @@ def proportional_curve_stable(spectrum: Spectrum, M: int) -> tuple[np.ndarray, n
 
     N = m + 1.0
     return N, np.minimum.accumulate(v)
+
+
+# ===========================================================================
+# v10, first step: commensurability in an expanding universe
+# ===========================================================================
+# Everything above assumes a fixed clock quantum hbar*omega. In a closed,
+# expanding universe the geometry itself supplies the natural frequency,
+# omega_k = c sqrt(k^2 + 1)/a(t), so omega falls as the universe grows. Then the
+# commensurability ratio nu = dE/(hbar*omega) that controls the winding
+# marginalisation factor |D_M(nu)| is *time dependent*, and coherence that is
+# protected at early times is not protected later. The functions here quantify
+# that drift. The cosmological input (a(t)) is a model choice, kept explicit.
+
+
+def scale_factor(
+    t: float, H0: float = 1.0, omega_m: float = 0.0, omega_l: float = 1.0
+) -> float:
+    """Normalised scale factor a(t), with a(0) = 1 and a'(0)/a(0) = H0.
+
+    Defaults to the empty, Lambda-dominated case (pure de Sitter), a = e^{H0 t},
+    which is the model the drift estimates assume, and which is what an era of
+    inflation or of dark-energy domination looks like. For matter + Lambda with
+    omega_m > 0 the exact integral is
+        t = (2/(3 H0 sqrt(omega_l))) asinh( sqrt(omega_l/omega_m) a^{3/2} ),
+    inverted here for a. Units: t in 1/H0.
+    """
+    if omega_m < 0.0 or omega_l < 0.0:
+        raise ValueError("densities must be non-negative")
+    if omega_m > 0.0:
+        if omega_l <= 0.0:
+            raise ValueError("a pure-matter closed form needs omega_l > 0; use an ODE")
+        pref = 2.0 / (3.0 * H0 * np.sqrt(omega_l))
+        x = np.sinh(t / pref) * np.sqrt(omega_m / omega_l)
+        return float(x ** (2.0 / 3.0))
+    return float(np.exp(H0 * t))
+
+
+def closed_mode_frequency_s3(k: int, a: float, c: float = 1.0) -> float:
+    """Frequency on a round S^3 of curvature radius a: omega_k = c sqrt(k^2-1)/a, k >= 2."""
+    if k < 2:
+        raise ValueError("the k = 1 mode of S^3 is homogeneous (zero frequency)")
+    if a <= 0.0:
+        raise ValueError("scale factor must be positive")
+    return float(c * np.sqrt(k * k - 1) / a)
+
+
+def commensurability_ratio(delta_e: float, omega: float) -> float:
+    """nu = dE/(hbar*omega) with hbar = 1: the argument of the winding factor D_M."""
+    if omega <= 0.0:
+        raise ValueError("frequency must be positive")
+    return float(delta_e / omega)
+
+
+def winding_envelope(nu, M_windings: int) -> np.ndarray:
+    """|D_M(nu)| = |sin(pi M nu)/(M sin(pi nu))|, with the limit 1 at integer nu."""
+    nu = np.asarray(nu, dtype=float)
+    M = int(M_windings)
+    if M < 1:
+        raise ValueError("M must be positive")
+    out = np.ones_like(nu)
+    off = np.abs(np.sin(np.pi * nu)) > 1e-12
+    out[off] = np.abs(np.sin(np.pi * M * nu[off]) / (M * np.sin(np.pi * nu[off])))
+    return out
+
+
+def drift_rate(delta_e: float, k: int, a: float, hdot_over_h: float, hbar: float = 1.0) -> float:
+    """d(nu)/dt = -nu * (d ln omega / dt) = nu * H(t), for omega = omega_k(a).
+
+    Because omega_k propto 1/a, ln omega decreases at exactly the Hubble rate, so
+    a coherence with ratio nu drifts through the winding factor at a rate set by
+    nu * H. This is the quantity that decides whether a protected coherence can
+    survive: the total drift across an era is the integral of nu H dt, which is
+    just nu * (number of e-folds).
+    """
+    nu = commensurability_ratio(delta_e, closed_mode_frequency_s3(k, a))
+    return float(nu * hdot_over_h)
+
+
+def drift_over_efolds(nu0: float, delta_efolds: float) -> tuple[float, float]:
+    """(nu_initial, nu_final) for a coherence drifting through ``delta_efolds``.
+
+    omega propto 1/a means nu propto a: the ratio GROWS with expansion, by one
+    e-fold per e-fold. So an early-time commensurability (nu integer) is broken by
+    expansion, not preserved.
+    """
+    return float(nu0), float(nu0 * np.exp(delta_efolds))
+
+
+def first_unprotected_efolds(nu0: float, tolerance: float = 0.05) -> float:
+    """E-folds before an integer-matched coherence (nu0 integer) is spoiled.
+
+    |D_M| returns to 1 at integer nu and falls to zero at half-integers; the
+    coherence is "spoiled" once nu has moved by ``tolerance`` from its integer
+    value. Returns ln((1+tolerance)/nu0 * nu0) style drift: N = ln(1+tolerance)
+    for a coherence starting at nu0 = 1, and shorter for higher harmonics.
+    """
+    if nu0 <= 0.0:
+        raise ValueError("nu0 must be positive")
+    if tolerance <= 0.0:
+        raise ValueError("tolerance must be positive")
+    return float(np.log(1.0 + tolerance))
