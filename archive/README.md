@@ -70,6 +70,15 @@ now **Figure 1** (`fig:cover`) with the surrounding paragraph in Sec. II.D:
 The arithmetic is checked in `make_figures.py` (4 occurrences of 2 AM in 96 h; 23 labels on the
 seam day; zero extra jumps under a global shift), so the caption cannot drift from the figure.
 
+**`photon_app/` — PHOTON-E screenshots (2026-10-17).** Seven frames of the author's own 3D photon
+documentation: the E-field helix from the side and oblique, the **axis-on view where the helix
+becomes concentric rings** (the staircase of Fig. 3 seen from above, and the reason the model
+"looked like an atom"), elliptical polarisation face-on and oblique, and the same ellipse rotated.
+Reviewed in `notes/photon-model-review.md`: the energy readout is correct to four figures against
+hc/lambda; the fractional "helicity" readout is an expectation value (a single photon measures
++-1 only); and the helix is the expectation of the field, i.e. the classical limit, not the photon's
+path.
+
 **`2026-10-18_time_dilation_vortex.jpg` — "slowest time / fastest spin".** A qualitative picture of
 a vortex carrying a time-dilation spectrum: $\gamma$, $N$, $\Delta N$, entropy/action, a
 $Δ \cdot 2\pi^2$ factor along $S_N$, a thermal $\pm\cos$ component, "fastest confit",
