@@ -33,7 +33,15 @@ src/qtime/estimates.py      all order-of-magnitude numbers quoted in the paper
 scripts/make_figures.py     regenerates figures/*.pdf|png
 tests/                      24 pytest checks of the claims in the paper
 notebooks/quadrature_time.ipynb  interactive exploration
+notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7) and its README
+archive/                    earlier chat-generated drafts, critiques and transcripts
 ```
+
+`notebooks/finite_clock/README.md` is the entry point for the one piece of this project
+that is a self-contained research line: how accurately a finite, equally spaced clock
+spectrum can represent an arbitrary (incommensurate) spectrum, and for how long. It
+records the fidelity bound of v5, the exact assignment optimum of v7, a universal
+N-level bound that follows from them, and precisely what the next step is.
 
 ## Quick start
 

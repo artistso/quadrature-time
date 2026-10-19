@@ -1,5 +1,27 @@
 # Change Log
 
+## Repository maintenance (2026-10-18) — no physics content changed
+
+A GitHub web upload of the whole working directory had flattened the repository: the
+`paper/`, `src/qtime/`, `tests/`, `scripts/`, `figures/` and `notebooks/` directories
+were dissolved and their contents written to the repository root, together with a
+partial dump of `.git/objects` (38-character hex filenames) and the chat-generated PDFs
+and transcripts from earlier sessions.
+
+| Change | Detail |
+|---|---|
+| Layout restored | `paper/`, `src/qtime/`, `tests/`, `scripts/`, `figures/`, `notebooks/` recreated from the revision-2 tree recorded in `archive/bundles/quadrature-time.bundle` (commit `569be92`). All 29 files were confirmed byte-identical to the flattened copies first; `pytest` is 24/24 again and `scripts/make_figures.py` regenerates all four figures. |
+| Duplicates removed | Root-level copies of `clocks.py`, `estimates.py`, `interferometer.py`, `modular.py`, `make_figures.py`, `test_clocks.py`, `test_physics.py`, `__init__.py`, `quadrature_time.tex|pdf|ipynb`, `fig1…fig4.*` (all byte-identical to their proper-path twins). |
+| Stray git objects removed | The 37 hex-named files were loose git objects (verified by zlib header); every one of their contents is already in history. |
+| Chat artifacts archived | 37 PDFs, `.txt` transcripts and images moved to `archive/chat-notes/`, with an inventory and a "check `REVIEW.md` before citing" warning in `archive/README.md`. The bundle moved to `archive/bundles/`. |
+| Finite-clock series gathered | The four `Finite_*Relational_Clock_*` notebooks moved to `notebooks/finite_clock/`. |
+| `README.md` | Repository-layout table updated; new paragraph pointing at the finite-clock series. |
+| `notebooks/finite_clock/README.md` | **New.** Documents the v1 → v4 → v5 → v7 chain, the reduction of the design problem to a weighted least-squares fit, the universal `V*_N ≤ R²/(4(N−1)²)` bound (verified, 0 violations for N = 4…128 over six spectra), and the open asymptotic question. |
+| `…_Fidelity_Bound_v5.ipynb` | Title cell said "v4" (copy-paste from the notebook it supersedes) and the closing section was numbered 7 twice; both fixed. Content unchanged. |
+
+`notebooks/finite_clock` note: v6 is referenced by v7 ("This strengthens v6's grid
+search") but was never committed; the chain in this repository is v1, v4, v5, v7.
+
 ## Revision 2 (response to the NotebookLM critique; see `NOTEBOOKLM_RESPONSE.md`)
 
 | Change | Where |
