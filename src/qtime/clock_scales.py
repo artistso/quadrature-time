@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .clock_design import Spectrum, three_level_optimum, universal_bound
+from .clock_design import Spectrum, round_half_up, three_level_optimum, universal_bound
 
 __all__ = [
     "design_rule",
@@ -80,7 +80,7 @@ def labels_for_quantum(
     if quantum <= 0.0:
         raise ValueError("quantum must be positive")
     a = float(spectrum.energies[0]) if offset is None else float(offset)
-    return tuple(int(x) for x in np.rint((spectrum.energies - a) / quantum).astype(int))
+    return tuple(int(x) for x in round_half_up((spectrum.energies - a) / quantum).astype(int))
 
 
 def admissible(spectrum: Spectrum, quantum: float, n_offsets: int = 20001) -> bool:

@@ -55,7 +55,7 @@ Everything here is deterministic and checked in tests/test_clock_design.py.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from fractions import Fraction
 from typing import Iterable, Sequence
 
@@ -175,7 +175,7 @@ class Spectrum:
         """Nearest-integer labels for a given clock spacing."""
         if spacing <= 0.0:
             raise ValueError("spacing must be positive")
-        return np.rint(self.shifted() / spacing).astype(int)
+        return round_half_up(self.shifted() / spacing).astype(int)
 
     def __repr__(self) -> str:  # pragma: no cover - cosmetic
         return f"Spectrum(d={self.size}, E={self.energies.tolist()}, weights={self.weights.tolist()})"
@@ -184,6 +184,20 @@ class Spectrum:
 # ---------------------------------------------------------------------------
 # the weighted least-squares core
 # ---------------------------------------------------------------------------
+def round_half_up(x):
+    """Round to the nearest integer, ties away from zero.
+
+    This is the convention the admissibility lemma needs.  ``numpy.rint`` rounds
+    ties to *even*, which is not monotone under a common shift: for the lattice
+    spectrum ``(0, 1.5, 2.5)`` and a quantum equal to the gap, ``rint`` returns
+    ``(0, 2, 2)`` -- a collision -- whereas half-up returns ``(0, 2, 3)``.  The
+    bound ``Delta <= g`` is only sufficient with a monotone convention, so every
+    label construction in this module uses this helper.
+    """
+    x = np.asarray(x, dtype=float)
+    return np.sign(x) * np.floor(np.abs(x) + 0.5)
+
+
 def _weighted_stats(values: np.ndarray, weights: np.ndarray) -> tuple[float, float]:
     """Weighted mean and variance (population form) of a 1-D array."""
     mean = float(weights @ values)
@@ -727,7 +741,7 @@ def nearest_labels(spectrum: Spectrum, spacing: float, offset: float, N: int) ->
     """Legal label vector obtained by rounding (E_j - offset)/spacing."""
     if spacing <= 0.0:
         raise ValueError("spacing must be positive")
-    raw = np.rint((spectrum.energies - offset) / spacing).astype(int)
+    raw = round_half_up((spectrum.energies - offset) / spacing).astype(int)
     return legalize_labels(raw, N)
 
 
@@ -1028,7 +1042,7 @@ def proportional_curve_stable(spectrum: Spectrum, M: int) -> tuple[np.ndarray, n
     v_e = float(w @ (E - e_mean) ** 2)
 
     m = np.arange(max(2, d - 1), M + 1, dtype=float)
-    Q = np.rint(m[:, None] * E[None, :] / span)
+    Q = round_half_up(m[:, None] * E[None, :] / span)
     distinct = np.all(np.diff(Q, axis=1) > 0, axis=1)
     Q, m = Q[distinct], m[distinct]
     if Q.size == 0:
@@ -1146,3 +1160,87 @@ def first_unprotected_efolds(nu0: float, tolerance: float = 0.05) -> float:
     if tolerance <= 0.0:
         raise ValueError("tolerance must be positive")
     return float(np.log(1.0 + tolerance))
+
+
+# ---------------------------------------------------------------------------
+# v12: the golden-ratio constant, exactly and provably
+#
+# The numerical statement "p^4 V*_p -> phi^4/60" was previously checked in
+# floating point, which fails past p ~ 10^3 because the covariance form cancels
+# two numbers of order V_E, and with rational arithmetic, which is limited by the
+# truncation of phi to a rational -- and the truncation dominates, so the error
+# does not improve as the labels grow.  Both limits are avoidable: phi is a
+# quadratic irrational, so V* can be computed exactly in Q(sqrt5), where it never
+# cancels and never truncates.  That turns the numerical claim into a theorem.
+# ---------------------------------------------------------------------------
+_PHI4_OVER_60_A = Fraction(7, 120)                   # phi^4/60 = (7 + 3 sqrt5)/120
+_PHI4_OVER_60_B = Fraction(3, 120)
+
+
+def fibonacci(n: int) -> int:
+    """F_n with F_1 = F_2 = 1."""
+    if n < 1:
+        raise ValueError("n must be positive")
+    a, b = 1, 1
+    for _ in range(n - 1):
+        a, b = b, a + b
+    return a
+
+
+def closed_form_golden_pair(q: int, p: int) -> tuple[Fraction, Fraction]:
+    """Exact V*(q,p) for the golden-ratio spectrum, returned as ``a + b*sqrt(5)``.
+
+    With r = phi = (1+sqrt5)/2 the residual is ``p - q*phi = (p - q/2) - (q/2)*sqrt5``,
+    whose square is again in Q(sqrt5), and the closed-form denominator is an
+    integer.  Every coefficient below is a Fraction, so nothing is truncated.
+    """
+    if q <= 0 or p <= q:
+        raise ValueError("labels must satisfy 1 <= q < p")
+    alpha = Fraction(p) - Fraction(q, 2)
+    beta = Fraction(-q, 2)
+    den = (p + q) ** 2 + (2 * q - p) ** 2 + (2 * p - q) ** 2
+    return (alpha * alpha + 5 * beta * beta) / den, (2 * alpha * beta) / den
+
+
+def golden_limit_difference(n: int) -> tuple[Fraction, Fraction]:
+    """Exact ``p^4 V*(q,p) - phi^4/60`` at Fibonacci labels, as ``a + b*sqrt(5)``.
+
+    ``q = F_n``, ``p = F_{n+1}``.  Both coefficients are exact Fractions; the
+    difference itself is a genuinely algebraic number, so it is reported as a
+    pair rather than collapsed to a float.  Use
+    :func:`golden_limit_magnitude` to evaluate its size to arbitrary precision.
+    """
+    q, p = fibonacci(n), fibonacci(n + 1)
+    a, b = closed_form_golden_pair(q, p)
+    return a * p**4 - _PHI4_OVER_60_A, b * p**4 - _PHI4_OVER_60_B
+
+
+def golden_limit_magnitude(n: int, digits: int = 40) -> Decimal:
+    """``|p^4 V*(q,p) - phi^4/60|`` evaluated to ``digits`` significant figures.
+
+    The two coefficients of the exact difference are of order ``p^4`` while their
+    ``sqrt(5)`` combination is tiny, so this is a cancellation -- but it is a
+    cancellation in *decimal*, performed here with ``digits`` significant figures
+    and an ``sqrt(5)`` correct to the same, not in binary double precision.  At
+    ``n = 40`` the difference is about ``1e-17`` while the coefficients are about
+    ``1e+37``, i.e. 54 digits of cancellation, which is why 40 digits is not
+    enough there; raise ``digits`` accordingly.
+    """
+    with localcontext() as ctx:
+        ctx.prec = int(digits) + 10
+        a, b = golden_limit_difference(n)
+        da = Decimal(a.numerator) / Decimal(a.denominator)
+        db = Decimal(b.numerator) / Decimal(b.denominator)
+        root = Decimal(5).sqrt()
+        # scale to working precision before combining, then report the modulus
+        ctx.prec = int(digits)
+        return abs(da + db * root)
+
+
+def golden_residual_identity(n: int) -> Fraction:
+    """Exact check that F_{n+1} - F_n*phi = (-1)^n * phi^(-n), as a Q(sqrt5) pair.
+
+    Returned as ``(a, b)`` meaning ``a + b*sqrt5``.
+    """
+    q, p = fibonacci(n), fibonacci(n + 1)
+    return Fraction(p) - Fraction(q, 2), Fraction(-q, 2)

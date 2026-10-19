@@ -34,7 +34,7 @@ src/qtime/clock_design.py   finite-clock design: exact optimum, universal bound,
                             exact rational arithmetic, optimiser for d >= 4
 src/qtime/clock_scales.py   admissibility of a real clock quantum; what tuning the spacing buys
 scripts/make_figures.py     regenerates figures/*.pdf|png
-tests/                      142 pytest checks: 24 for the paper, 118 for the clock design
+tests/                      152 pytest checks: 24 for the paper, 128 for the clock design
 notebooks/quadrature_time.ipynb  interactive exploration
 notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8, v9) and its README
 notes/                      working notes on ideas outside the manuscript (not claims),

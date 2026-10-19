@@ -28,7 +28,7 @@ A(t) = Σ_j p_j e^{−iδ_j t} and the fidelity is F(t) = |A(t)|².
 | `Finite_Relational_Clock_Asymptotics_v8.ipynb` | **The scaling law.** Universal bound, three-level closed form, N⁻⁴ decay with exact constant, the Diophantine reformulation, and an O(N) optimiser that reaches N = 10⁶. | complete |
 | `Finite_Relational_Clock_Exact_Arithmetic_v9.ipynb` | **Exact arithmetic, higher dimensions, and a correction.** Commensurability becomes an exact statement; a general optimiser for d ≥ 4 replaces enumeration; and the exponent turns out to depend on the *spectrum*, not the dimension. | **current** |
 
-Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (118 checks, in
+Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (128 checks, in
 addition to the 24 manuscript tests). Propositions 1–2 and the N⁻⁴ law are now Sec. V.C of
 the manuscript.
 
@@ -178,7 +178,7 @@ listed below.
 ## How to pick this up
 
 ```bash
-python -m pytest tests/test_clock_design.py -q     # 118 checks, ~5 s
+python -m pytest tests/test_clock_design.py -q     # 128 checks, ~5 s
 # then, in order: v1, v4, v5, v7, v8, v9
 ```
 

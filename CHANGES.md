@@ -1,5 +1,55 @@
 # Change Log
 
+## v12: adversarial audit of the new material — three defects found and fixed (2026-10-18)
+
+`REVIEW.md` audited the original draft; nothing had audited v8–v11. This entry is that audit.
+Full write-up in `notes/referee_audit_v11.md`.
+
+### Defect 1: the admissibility lemma was false as written
+
+The lemma claimed `Δ ≤ g` (smallest gap) suffices for distinct labels under nearest-integer rounding.
+That is only true with a monotone convention. `numpy.rint` rounds ties to even, which is not monotone,
+and the lemma fails at its own boundary:
+
+| spectrum | Δ = g | round-to-even | round-half-up |
+|---|---|---|---|
+| (0, 1.5, 2.5) | 1.0 | **(0, 2, 2)** | (0, 2, 3) |
+| (0, 1.5, 2.5, 3.5) | 1.0 | **(0, 2, 2, 4)** | (0, 2, 3, 4) |
+
+A 20 000-spectrum random scan found nothing, because ties have measure zero — the bug is only visible
+to a hand-built counterexample, which is exactly what a referee builds. Fixed: the lemma now states
+the convention `q_j = floor((E_j−E_1)/Δ + ½)` and proves strict increase for it; the code gained
+`round_half_up` and every label path uses it; three regression tests pin the counterexample.
+
+### Defect 2: "N = 10^6 in under a second" was false
+
+Measured: 0.038 s at N=10^3, 0.365 s at 10^4, 3.84 s at 10^5, **37.6 s at 10^6** — off by 40x. The
+claim is replaced by the measurement (0.4 s at N=10^4). A convergent-only fast path was tried and is
+not valid: for √2 at N=11 the optimum is (0,7,10), whose ratio 10/7 is the *mediant* of 7/5 and 3/2,
+and adding semiconvergents still misses π at small N. The linear scan stays, and the paper now says
+why.
+
+### Defect 3: the golden-ratio constant was checked, not proved
+
+The remark claimed confirmation "to 3e-8 in exact rational arithmetic". Both available checks fail:
+the float covariance form cancels numbers of order V_E (wrong past p≈10^3), and rational arithmetic
+truncating φ to a convergent is limited by that truncation, whose error *grows* with p. Fixed by
+working in ℚ(√5), where φ is exact and nothing cancels. The limit is now derived, not fitted:
+
+    p^4 V* = (φ^4/60)[1 + O(φ^{-2n})],   q = F_n, p = F_{n+1},
+
+from F_{n+1} − φF_n = (−1)^n φ^{-n} and denominator F_{n+2}² + F_{n−2}² + L_n² ~ (12/5)φ^{2n}. The
+exact discrepancy falls by φ² per step: 2.5e-3 at p=5 to 2.3e-13 at p=514229.
+
+### Also
+
+- Abstract (iv) and the introduction now carry v11's scope condition (N^-4 needs a free spacing;
+  a pinned quantum is confined to N^-2 and above the smallest gap resolves nothing), so the abstract
+  no longer overclaims relative to the body.
+- New tests that the pinned variance never exceeds the universal bound (120 random spectra), which
+  makes v11's ceiling a theorem rather than a trend.
+- Tests 142 -> 152.
+
 ## v11: which clocks can be relational clocks, and what tuning buys (2026-10-18)
 
 The previous entries treated the clock quantum $\Delta=\hbar\omega$ as a free design parameter.

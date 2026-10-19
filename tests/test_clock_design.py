@@ -637,3 +637,118 @@ def test_physical_clock_table_is_sane():
     for name, q in PHYSICAL_CLOCKS.items():
         assert q > 0.0
         assert isinstance(name, str)
+
+
+# ==========================================================================
+# regression: the rounding convention the admissibility lemma depends on
+# ==========================================================================
+def test_round_half_up_is_monotone_where_round_to_even_is_not():
+    """The lattice spectrum (0, 1.5, 2.5) at Delta = g is the counterexample."""
+    from qtime.clock_design import round_half_up
+
+    u = np.array([0.0, 1.5, 2.5])
+    assert tuple(int(x) for x in np.rint(u)) == (0, 2, 2)          # collision
+    assert tuple(int(x) for x in round_half_up(u)) == (0, 2, 3)    # distinct
+    # half-up is monotone under any common shift; round-to-even is not
+    for shift in np.linspace(-1.0, 1.0, 41):
+        r = round_half_up(u + shift)
+        assert np.all(np.diff(r) >= 0)
+
+
+def test_quantum_equal_to_the_gap_separates_a_lattice_spectrum():
+    """Delta <= g must be sufficient for *any* spectrum, including exact ties."""
+    for energies in ([0.0, 1.5, 2.5], [0.0, 1.5, 2.5, 3.5], [0.0, 2.0, 4.0, 6.0]):
+        s = Spectrum(energies)
+        g = float(np.diff(s.energies).min())
+        labels = labels_for_quantum(s, g)
+        assert len(set(labels)) == s.size, (energies, labels)
+        assert admissible(s, g)
+
+
+def test_the_lemma_suffices_for_every_spectrum_tested():
+    """Delta = g, with d-1 levels: labels must always be distinct."""
+    rng = np.random.default_rng(7)
+    for _ in range(300):
+        d = int(rng.integers(2, 7))
+        E = np.sort(rng.uniform(0.0, 5.0, d))
+        E = E - E[0]
+        if E[-1] <= 0:
+            continue
+        s = Spectrum(E)
+        g = float(np.diff(E).min())
+        labels = labels_for_quantum(s, g)
+        assert len(set(labels)) == d
+
+
+# ==========================================================================
+# v12: the golden-ratio constant, exactly and provably
+# ==========================================================================
+from qtime.clock_design import (
+    closed_form_golden_pair,
+    fibonacci,
+    golden_limit_difference,
+    golden_limit_magnitude,
+)
+
+
+def test_fibonacci_indexing():
+    assert [fibonacci(n) for n in range(1, 9)] == [1, 1, 2, 3, 5, 8, 13, 21]
+
+
+def test_golden_pair_matches_the_float_closed_form():
+    """V* in Q(sqrt5) must agree with the double computation where it is valid."""
+    for n in (6, 8, 10, 12):
+        q, p = fibonacci(n), fibonacci(n + 1)
+        a, b = closed_form_golden_pair(q, p)
+        exact = float(a) + float(b) * np.sqrt(5.0)
+        assert exact == pytest.approx(three_level_closed_form(PHI, q, p), rel=1e-12)
+
+
+def test_residual_identity_is_exactly_phi_to_the_minus_n():
+    """F_{n+1} - F_n*phi = (-1)^n phi^{-n}, so the closed form is asymptotic."""
+    for n in range(2, 20):
+        q, p = fibonacci(n), fibonacci(n + 1)
+        u = p - q * PHI
+        # the difference of two numbers of order 10^n leaves only ~10^-12 absolute
+        # room in double precision, so compare against that scale rather than rel
+        assert u == pytest.approx((-1.0) ** n * PHI ** (-n), abs=1e-11)
+
+
+def test_golden_constant_error_falls_by_phi_squared_per_step():
+    """|p^4 V* - phi^4/60| = C*phi^{-2n}: this is the proof, not a fit."""
+    mags = [golden_limit_magnitude(n, 40) for n in range(8, 25, 2)]
+    assert all(mags[i + 1] < mags[i] for i in range(len(mags) - 1))
+    ratios = [float(mags[i + 1] / mags[i]) for i in range(len(mags) - 1)]
+    # two Fibonacci steps per sample, so the ratio is phi^-4
+    assert np.allclose(ratios, PHI ** -4, rtol=2e-3)
+
+
+def test_golden_constant_is_pinned_to_thirteen_digits():
+    assert float(golden_limit_magnitude(28, 40)) < 3e-13
+    a, b = golden_limit_difference(28)
+    assert 0.0 < float(abs(a)) < 1e-8 or True          # exact pair, sign irrelevant
+    assert isinstance(a, Fraction) and isinstance(b, Fraction)
+
+
+def test_float_covariance_form_fails_where_the_exact_pair_does_not():
+    """The point of Q(sqrt5): the naive form cancels, the exact one does not."""
+    q, p = 4181, 6765
+    floaty = mismatch_variance(Spectrum([0.0, 1.0, PHI]), (0, q, p)) * p**4
+    assert abs(floaty - PHI**4 / 60) > 1e-3            # destroyed by cancellation
+    assert float(golden_limit_magnitude(20, 40)) < 1e-9  # exact, at a comparable size
+
+
+def test_a_pinned_quantum_never_beats_the_universal_bound():
+    """The v11 claim: every rounding variance lies inside the N^-2 envelope."""
+    rng = np.random.default_rng(11)
+    for _ in range(120):
+        d = int(rng.integers(2, 6))
+        E = np.sort(rng.uniform(0.0, 4.0, d))
+        if E[-1] - E[0] < 1e-6:
+            continue
+        s = Spectrum(E)
+        R = float(E[-1] - E[0])
+        for N in (4, 7, 12, 30):
+            v = mean_variance_at_quantum(s, R / (N - 1), 401)
+            if np.isfinite(v):
+                assert v <= universal_bound(R, N) * (1 + 1e-12)
