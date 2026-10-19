@@ -54,7 +54,9 @@ Everything here is deterministic and checked in tests/test_clock_design.py.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from decimal import Decimal
+from fractions import Fraction
 from typing import Iterable, Sequence
 
 import numpy as np
@@ -76,6 +78,21 @@ __all__ = [
     "convergents",
     "diophantine_ratio",
     "predicted_exponent",
+    # v9: exact arithmetic and the general (d >= 4) optimiser
+    "Optimum",
+    "gap_ratio_fraction",
+    "exact_variance",
+    "three_level_closed_form_exact",
+    "scaling_curve_exact",
+    "fitted_design",
+    "mismatch_variance_stable",
+    "nearest_labels",
+    "legalize_labels",
+    "self_consistent",
+    "search_optimum",
+    "proportional_curve",
+    "proportional_curve_stable",
+    "decay_exponent",
 ]
 
 
@@ -204,6 +221,22 @@ def optimal_spacing(spectrum: Spectrum, labels: Sequence[int]) -> float:
         return float("nan")
     c_eq = float(w @ ((spectrum.energies - e_mean) * (lab - q_mean)))
     return float(max(c_eq / v_q, 0.0))
+
+
+def mismatch_variance_stable(spectrum: Spectrum, labels: Sequence[int]) -> float:
+    """Same quantity as :func:`mismatch_variance`, computed without cancellation.
+
+    Instead of V_E - C^2/V_q (a difference of two numbers of order V_E, which
+    loses everything once the variance falls below ~1e-14 V_E) this evaluates the
+    residual directly: V*(q) = sum_j p_j (E_j - a* - q_j Delta*)^2 with the
+    fitted (a*, Delta*). Every term is a difference of nearby numbers, so the
+    relative accuracy is limited by how small the residual is, not by V_E.
+    """
+    delta, offset = fitted_design(spectrum, labels)
+    if not np.isfinite(delta):
+        return float(spectrum.variance)
+    resid = spectrum.energies - offset - np.asarray(list(labels), dtype=float) * delta
+    return float(spectrum.weights @ resid**2)
 
 
 def fit_quality(spectrum: Spectrum, labels: Sequence[int]) -> float:
@@ -490,3 +523,517 @@ def predicted_exponent(spectrum: Spectrum, Ns: Sequence[int]) -> float:
     if good.sum() < 2:
         return float("nan")
     return float(np.polyfit(np.log(N[pick][good]), np.log(v[good]), 1)[0])
+
+
+# ===========================================================================
+# v9, part 1: exact arithmetic
+# ===========================================================================
+# Double precision stops being trustworthy once |p - r q| falls below about
+# 1e-13, i.e. around p ~ 2000 for quadratic irrationals. The closed form is a
+# ratio of integers once r is written as an exact fraction, so there is no
+# reason to lose a single digit.
+
+
+def _dec(x: float) -> Fraction:
+    """Exact rational value of the shortest decimal representation of a float.
+
+    ``Fraction(Decimal(repr(2.5)))`` is 5/2; ``Fraction(int(2.5*10**40), 10**40)``
+    is not, because 2.5*10**40 has already lost its low digits in binary. Using
+    the decimal repr is what makes the commensurate cases come out exactly zero.
+    """
+    return Fraction(Decimal(repr(float(x))))
+
+
+def gap_ratio_fraction(spectrum: Spectrum, digits: int | None = None) -> Fraction:
+    """The gap ratio (E_3-E_1)/(E_2-E_1) of a three-level spectrum, exactly.
+
+    The result is the exact rational value of the *decimal* numbers in the
+    spectrum, e.g. 5/2 for (0, 1, 2.5) and the 16-digit decimal expansion of
+    sqrt(2) for (0, 1, sqrt(2)). ``digits`` is accepted for backwards
+    compatibility and ignored.
+
+    Honest limit: the exactness is relative to the given decimal expansion of r.
+    A double-precision r is itself only accurate to ~1e-17, so p^4 V* is reliable
+    while |p - r q| >> 1e-17 p, i.e. out to p ~ 10^8 for quadratic irrationals.
+    Past that the remaining error is the truncation of r, not round-off in the
+    arithmetic.
+    """
+    gap = spectrum.shifted()
+    if spectrum.size != 3:
+        raise ValueError("gap_ratio_fraction requires exactly three levels")
+    if gap[1] <= 0.0:
+        raise ValueError("energies must be strictly increasing")
+    return _dec(gap[2]) / _dec(gap[1])
+
+
+def three_level_closed_form_exact(r: Fraction, q: int, p: int) -> Fraction:
+    """Exact V*(q, p) = (p - r q)^2 / [(p+q)^2 + (2q-p)^2 + (2p-q)^2].
+
+    Inputs are integers apart from ``r``; the result is an exact Fraction, so
+    there is no round-off at any label size. Uniform weights only (the closed
+    form does not generalise to weighted spectra; see ``exact_variance``).
+    """
+    if q <= 0 or p <= q:
+        raise ValueError("labels must satisfy 1 <= q < p")
+    resid = p - r * q
+    den = (p + q) ** 2 + (2 * q - p) ** 2 + (2 * p - q) ** 2
+    return Fraction(resid * resid, den)
+
+
+def exact_variance(
+    energies: Sequence[Fraction], weights: Sequence[Fraction], labels: Sequence[int]
+) -> Fraction:
+    """Exact minimised mismatch variance for any d and any rational weights.
+
+    Same quantity as :func:`mismatch_variance`, computed in rational arithmetic:
+    V*(q) = V_E - C_{Eq}^2 / V_q. Use this to turn a floating-point optimum into
+    an exact statement (e.g. to prove that a commensurate spectrum is reproduced
+    with zero error) or to evaluate a candidate at label sizes where doubles
+    cannot resolve the residual.
+    """
+    E = [Fraction(x) for x in energies]
+    w = [Fraction(x) for x in weights]
+    q = [Fraction(int(x)) for x in labels]
+    if not (len(E) == len(w) == len(q)):
+        raise ValueError("energies, weights and labels must have equal length")
+    if len(set(labels)) != len(labels):
+        raise ValueError("labels must be distinct")
+    total = sum(w)
+    if total <= 0:
+        raise ValueError("weights must not all be zero")
+    w = [x / total for x in w]
+    mE = sum(wi * Ei for wi, Ei in zip(w, E))
+    mq = sum(wi * qi for wi, qi in zip(w, q))
+    vE = sum(wi * (Ei - mE) ** 2 for wi, Ei in zip(w, E))
+    vq = sum(wi * (qi - mq) ** 2 for wi, qi in zip(w, q))
+    if vq == 0:
+        raise ValueError("labels must not all be equal")
+    c = sum(wi * (Ei - mE) * (qi - mq) for wi, Ei, qi in zip(w, E, q))
+    return vE - c * c / vq
+
+
+def scaling_curve_exact(
+    spectrum: Spectrum, pmax: int, digits: int = 40, window: int = 2
+) -> list[tuple[int, Fraction]]:
+    """Exact ``(p, V*_p)`` at the convergent labels of a three-level spectrum.
+
+    The optimum re-equilibrates at convergent labels, so this is the sequence
+    that carries the asymptotic information; evaluating it exactly removes the
+    round-off floor that limits :func:`scaling_curve` to p ~ 2000.
+    """
+    if spectrum.size != 3:
+        raise ValueError("scaling_curve_exact requires exactly three levels")
+    r = gap_ratio_fraction(spectrum)
+    out: list[tuple[int, Fraction]] = []
+    conv = convergents(float(r), 60)
+    for p, q in conv:
+        if q < 1 or p < 2 or p > pmax:
+            continue
+        if p <= q:
+            continue
+        out.append((p, three_level_closed_form_exact(r, q, p)))
+    return out
+
+
+# ===========================================================================
+# v9, part 2: the general optimiser (d >= 4)
+# ===========================================================================
+# Enumeration is binomial(N-1, d-1): hopeless past d = 3. But the objective has
+# a special structure. Minimising over the spacing AND the offset is a two
+# parameter weighted least-squares fit, so for fixed (Delta, offset) the optimal
+# labels are independent: q_j = round((E_j - offset)/Delta). The optimisation is
+# therefore a search over a two-dimensional design plane, where for each cell the
+# labels are known and the objective is an explicit quadratic. We walk the plane
+# on a grid, apply the analytic fit, re-round, and iterate to a fixed point.
+
+
+@dataclass(frozen=True)
+class Optimum:
+    """Result of :func:`search_optimum`.
+
+    Attributes
+    ----------
+    variance : float
+        V*(q) at the best assignment found.
+    labels : tuple of int
+        The assignment, strictly increasing inside [0, N-1].
+    spacing, offset : float
+        The fitted design (Delta*, a*) for those labels.
+    self_consistent : bool
+        Whether re-rounding the fitted design reproduces the same labels. This
+        is a fixed-point test, i.e. a *necessary* condition for the assignment
+        to be a stationary point of the design problem; it is not a proof of
+        global optimality.
+    starts : int
+        How many grid starts were explored (diagnostic).
+    """
+
+    variance: float
+    labels: tuple[int, ...]
+    spacing: float = float("nan")
+    offset: float = float("nan")
+    self_consistent: bool = False
+    starts: int = 0
+
+
+def fitted_design(spectrum: Spectrum, labels: Sequence[int]) -> tuple[float, float]:
+    """The (spacing, offset) minimising sum_j p_j (E_j - a - q_j Delta)^2."""
+    lab = np.asarray(list(labels), dtype=float)
+    if lab.shape != spectrum.energies.shape:
+        raise ValueError("labels must have the same length as energies")
+    w = spectrum.weights
+    e_mean = float(w @ spectrum.energies)
+    q_mean = float(w @ lab)
+    v_q = float(w @ (lab - q_mean) ** 2)
+    if v_q <= 0.0:
+        return float("nan"), float("nan")
+    c = float(w @ ((spectrum.energies - e_mean) * (lab - q_mean)))
+    delta = c / v_q
+    return delta, e_mean - delta * q_mean
+
+
+def legalize_labels(labels: Iterable[int], N: int, d: int | None = None) -> tuple[int, ...]:
+    """Force a label vector to be strictly increasing with 0 <= q_j <= N-1.
+
+    Labels are pushed apart forward, then pulled back inside the clock's range,
+    so the result is always a legal assignment (provided N >= d).
+    """
+    q = [int(x) for x in labels]
+    d = len(q) if d is None else int(d)
+    N = int(N)
+    if d < 1 or N < d:
+        raise ValueError("need N >= number of levels")
+    for j in range(1, d):
+        q[j] = max(q[j], q[j - 1] + 1)
+    if q[-1] > N - 1:
+        shift = q[-1] - (N - 1)
+        q = [x - shift for x in q]
+    for j in range(d):
+        q[j] = max(0, min(q[j], N - 1 - (d - 1 - j)))
+    for j in range(1, d):
+        q[j] = max(q[j], q[j - 1] + 1)
+    return tuple(q)
+
+
+def nearest_labels(spectrum: Spectrum, spacing: float, offset: float, N: int) -> tuple[int, ...]:
+    """Legal label vector obtained by rounding (E_j - offset)/spacing."""
+    if spacing <= 0.0:
+        raise ValueError("spacing must be positive")
+    raw = np.rint((spectrum.energies - offset) / spacing).astype(int)
+    return legalize_labels(raw, N)
+
+
+def self_consistent(spectrum: Spectrum, labels: Sequence[int], N: int, tol: float = 1e-9) -> bool:
+    """Does re-rounding the fitted design reproduce ``labels``?"""
+    delta, offset = fitted_design(spectrum, labels)
+    if not np.isfinite(delta) or delta <= 0.0:
+        return False
+    again = nearest_labels(spectrum, delta, offset, N)
+    return tuple(int(x) for x in labels) == again
+
+
+def _coordinate_descent(
+    spectrum: Spectrum, labels: tuple[int, ...], N: int, steps: int = 2, max_pass: int = 12
+) -> tuple[float, tuple[int, ...]]:
+    """Best-improvement search over single-label moves of +-1 ... +-steps.
+
+    A local search on the label lattice; it escapes the poor fixed points that
+    the re-rounding iteration can sit in (e.g. the golden ratio at N = 40, where
+    (0,13,21) is a fixed point but (0,21,34) is better).
+    """
+    best = mismatch_variance_stable(spectrum, labels)
+    current = tuple(int(x) for x in labels)
+    d = len(current)
+    for _ in range(int(max_pass)):
+        improved = False
+        for j in range(d):
+            for move in range(-steps, steps + 1):
+                if move == 0:
+                    continue
+                trial = list(current)
+                trial[j] += move
+                if not all(0 <= trial[k] < N for k in range(d)):
+                    continue
+                if any(trial[k] >= trial[k + 1] for k in range(d - 1)):
+                    continue
+                v = mismatch_variance_stable(spectrum, trial)
+                if v < best - 1e-18 * max(1.0, abs(best)):
+                    best, current = v, tuple(trial)
+                    improved = True
+        if not improved:
+            break
+    return best, current
+
+
+def _window_descent(
+    spectrum: Spectrum,
+    labels: tuple[int, ...],
+    N: int,
+    half_width: int = 6,
+    max_pass: int = 6,
+) -> tuple[float, tuple[int, ...]]:
+    """Coordinate sweep in which each label may move anywhere inside +-half_width.
+
+    A much larger neighbourhood than :func:`_coordinate_descent`, and the one that
+    settles the d = 4 cases where single moves get stuck.
+    """
+    best = mismatch_variance_stable(spectrum, labels)
+    current = tuple(int(x) for x in labels)
+    d = len(current)
+    for _ in range(int(max_pass)):
+        improved = False
+        for j in range(d):
+            lo = max(0, current[j] - half_width, current[j - 1] + 1 if j > 0 else 0)
+            hi = min(N - 1, current[j] + half_width, current[j + 1] - 1 if j < d - 1 else N - 1)
+            for q in range(lo, hi + 1):
+                if q == current[j]:
+                    continue
+                trial = list(current)
+                trial[j] = q
+                v = mismatch_variance_stable(spectrum, trial)
+                if v < best - 1e-18 * max(1.0, abs(best)):
+                    best, current = v, tuple(trial)
+                    improved = True
+        if not improved:
+            break
+    return best, current
+
+
+def search_optimum(
+    spectrum: Spectrum,
+    N: int,
+    n_spacing: int = 41,
+    n_shift: int = 5,
+    max_iter: int = 30,
+    polish: int = 12,
+    extra_seeds: Iterable[Sequence[int]] = (),
+) -> Optimum:
+    """Global search over the (spacing, offset) design plane, for any d.
+
+    Three stages:
+
+    1. *Seeds.* Spacings log-spaced around R/(N-1) combined with offsets whose
+       residues fill one period of the spacing, plus any user seeds. Each seed is
+       rounded and then iterated to a fixed point of (fit -> re-round).
+    2. *Scoring.* Every distinct legal assignment reached is scored with the
+       analytic V*(q); duplicates are collapsed.
+    3. *Polish.* The best ``polish`` candidates undergo coordinate descent on the
+       label lattice (single-label moves of +-1, +-2). This matters: for the
+       golden ratio at N = 40 the fixed point (0,13,21) is beaten by (0,21,34),
+       and only the local search finds it.
+
+    The result is the best assignment visited. This is a heuristic: it is
+    validated against exhaustive enumeration for d = 3 (N <= 120, uniform and
+    weighted) and d = 4 (N <= 36) in the test suite, and ``self_consistent`` is
+    reported as a diagnostic, not as a certificate of global optimality.
+
+    Known limitation: the seed grid is finite, so at large N it can miss the
+    Diophantine-quality assignments (it finds labels *proportional* to the
+    spectrum only if m = q_top happens to be in the grid). For spectra whose
+    optimum is proportional -- every power-of-a-quadratic-irrational spectrum --
+    use :func:`proportional_curve` (exact) or :func:`proportional_curve_stable`
+    (fast to M ~ 10^6) instead, which scan the whole family rather than a sample
+    of it.
+    """
+    N = int(N)
+    d = spectrum.size
+    if N < d:
+        raise ValueError("clock dimension must be at least the number of levels")
+    energies = spectrum.shifted()
+    span = float(energies[-1] - energies[0])
+    if span <= 0.0:
+        raise ValueError("spectrum has zero range")
+
+    # Family A: a blind grid over the design plane, iterated to a fixed point.
+    spacings = span / (N - 1) * np.logspace(-1.2, 1.4, int(n_spacing))
+    seeds: list[tuple[int, ...]] = [tuple(range(d)), tuple(range(N - d, N))]
+    for delta in spacings:
+        for frac in np.linspace(0.0, 1.0, int(n_shift), endpoint=False):
+            offset = float(energies[0]) - frac * float(delta)
+            seeds.append(nearest_labels(spectrum, float(delta), offset, N))
+
+    # Family B: spacings tied to the spectrum's own range, one per candidate
+    # top label m. The labels of the optimum are very nearly proportional to the
+    # energies, so Delta = range/m with a sub-step offset generates them
+    # directly. This is what finds (0,8,13,21) for the phi-power spectrum, which
+    # no logarithmic grid of spacings hits exactly.
+    m_all = np.unique(
+        np.concatenate(
+            [
+                np.arange(d, min(N, 400)),
+                np.unique(np.round(np.geomspace(max(d, 2), N, 120)).astype(int)) - 1,
+                np.unique(np.round(np.linspace(d, N, 240)).astype(int)) - 1,
+                np.array([N - 1]),
+            ]
+        )
+    )
+    m_all = m_all[(m_all >= d) & (m_all <= N - 1)]
+    for m in m_all:
+        delta = span / float(m)
+        for shift in (0.0, -0.5, 0.5, -0.25, 0.25):
+            offset = float(energies[0]) + shift * delta
+            seeds.append(nearest_labels(spectrum, delta, offset, N))
+
+    if d == 3:  # convergent labels are near-optimal for uniform weights
+        rr = float(energies[2] / energies[1])
+        for p_, q_ in convergents(rr, 40):
+            if 1 <= q_ < p_ <= N - 1:
+                seeds.append((0, int(q_), int(p_)))
+    for lab in extra_seeds:
+        seeds.append(legalize_labels(lab, N, d))
+
+    scored: dict[tuple[int, ...], float] = {}
+    for lab in seeds:
+        current = lab
+        for _ in range(int(max_iter)):
+            delta, offset = fitted_design(spectrum, current)
+            if not np.isfinite(delta) or delta <= 0.0:
+                break
+            nxt = nearest_labels(spectrum, delta, offset, N)
+            if nxt == current:
+                break
+            current = nxt
+        for candidate in (lab, current):
+            if candidate not in scored:
+                scored[candidate] = mismatch_variance_stable(spectrum, candidate)
+
+    ranked = sorted(scored.items(), key=lambda kv: kv[1])[: max(1, int(polish))]
+    best_lab, best_v = ranked[0]
+    for lab, _ in ranked:
+        v, polished = _coordinate_descent(spectrum, lab, N)
+        v, polished = _window_descent(spectrum, polished, N)
+        if v < best_v:
+            best_v, best_lab = v, polished
+
+    delta, offset = fitted_design(spectrum, best_lab)
+    return Optimum(
+        variance=float(min(best_v, mismatch_variance_stable(spectrum, best_lab))),
+        labels=tuple(int(x) for x in best_lab),
+        spacing=float(delta),
+        offset=float(offset),
+        self_consistent=self_consistent(spectrum, best_lab, N),
+        starts=len(seeds),
+    )
+
+
+# ===========================================================================
+# v9, part 3: the proportional family, and what the exponent really is
+# ===========================================================================
+# The labels of the optimum are very nearly proportional to the energies, so
+# the one-parameter family q_j = round(m E_j / R), m = 2, 3, ..., is where the
+# action is. Scanning it with exact arithmetic gives V*_N without any round-off
+# floor, which is what makes the decay exponent measurable at all.
+
+
+def proportional_curve(
+    spectrum: Spectrum, M: int, exact: bool = True, digits: int = 40
+) -> tuple[np.ndarray, np.ndarray]:
+    """V*_N for the proportional family q_j = round(m E_j / R), m <= M.
+
+    Returns ``(N, V*)`` where ``V*[k]`` is the best variance achieved by any
+    member of the family that fits inside a clock with ``N[k] = m+1`` levels, and
+    both arrays are restricted to the running minimum. Because the family is a
+    *subset* of all assignments, these values are upper bounds on the true
+    optimum; for the quadratic spectra studied here (powers of the golden ratio)
+    the family contains the optimum.
+
+    ``exact=True`` evaluates V* in rational arithmetic (``exact_variance``),
+    which is essential: for m ~ 10^4 the variance is ~10^-18 and the
+    floating-point covariance form returns nothing but cancellation noise.
+    """
+    M = int(M)
+    d = spectrum.size
+    if M < d:
+        raise ValueError("M must be at least the number of levels")
+    E = [_dec(x) if exact else Fraction(float(x)) for x in spectrum.energies]
+    E0 = E[0]
+    E = [x - E0 for x in E]
+    span = E[-1]
+    if span <= 0:
+        raise ValueError("spectrum has zero range")
+    w = [_dec(x) for x in spectrum.weights]
+
+    Ns: list[int] = []
+    vs: list[Fraction] = []
+    for m in range(max(2, d - 1), M + 1):
+        q = [int(round(float(Ej * m / span))) for Ej in E]
+        if len(set(q)) < d:
+            continue
+        Ns.append(m + 1)
+        vs.append(exact_variance(E, w, q))
+    vals = np.array([float(v) for v in vs], dtype=float)
+    N = np.array(Ns, dtype=float)
+    running = np.minimum.accumulate(vals)
+    return N, running
+
+
+def decay_exponent(
+    N: Iterable[float], V: Iterable[float], n_points: int = 40
+) -> float:
+    """Log-log slope of a running-minimum V*(N) curve over its informative range.
+
+    Points are sampled geometrically and the fit is restricted to values above
+    the floor where the curve is still falling, so that plateaus and numerical
+    saturation do not bias the slope.
+    """
+    N = np.asarray(list(N), dtype=float)
+    V = np.asarray(list(V), dtype=float)
+    if N.size < 4:
+        raise ValueError("need at least four samples")
+    grid = np.geomspace(N[2], N[-1], int(n_points))
+    idx = np.searchsorted(N, grid) - 1
+    idx = idx[idx >= 2]
+    if idx.size < 3:
+        raise ValueError("not enough samples in range")
+    n_sel = N[idx]
+    v_sel = V[idx]
+    good = v_sel > 0.0
+    if good.sum() < 3:
+        raise ValueError("curve is numerically zero over the sampled range")
+    return float(np.polyfit(np.log(n_sel[good]), np.log(v_sel[good]), 1)[0])
+
+
+def proportional_curve_stable(spectrum: Spectrum, M: int) -> tuple[np.ndarray, np.ndarray]:
+    """Vectorised proportional-family curve, stable and fast up to M ~ 10^6.
+
+    Same family as :func:`proportional_curve` (``q_j = round(m E_j / R)``), but
+    evaluated in floating point with the *residual* form of the variance
+    (``mismatch_variance_stable``) rather than the covariance form, which is what
+    makes it accurate: for each member the fitted (a*, Delta*) is obtained from
+    vectorised weighted statistics and the variance is then read off the
+    residuals. Cost is O(M d) with d numpy operations, about 1e6 members per
+    second.
+
+    Accuracy caveat: the residual of the best member is ~1e-9 relative to V_E at
+    M ~ 10^4 and ~1e-13 at M ~ 10^6, so beyond M ~ 10^5 the floating-point result
+    should be checked against :func:`proportional_curve` (exact) at a few points.
+    """
+    M = int(M)
+    d = spectrum.size
+    if M < max(2, d):
+        raise ValueError("M must be at least the number of levels")
+    E = spectrum.energies.astype(float)
+    E = E - E[0]
+    span = float(E[-1])
+    w = spectrum.weights
+    e_mean = float(w @ E)
+    v_e = float(w @ (E - e_mean) ** 2)
+
+    m = np.arange(max(2, d - 1), M + 1, dtype=float)
+    Q = np.rint(m[:, None] * E[None, :] / span)
+    distinct = np.all(np.diff(Q, axis=1) > 0, axis=1)
+    Q, m = Q[distinct], m[distinct]
+    if Q.size == 0:
+        raise ValueError("no legal proportional assignment below M")
+
+    mq = Q @ w
+    vq = ((Q - mq[:, None]) ** 2) @ w
+    c = ((E - e_mean)[None, :] * (Q - mq[:, None])) @ w
+    delta = c / vq
+    offset = e_mean - delta * mq
+    resid = E[None, :] - offset[:, None] - Q * delta[:, None]
+    v = (resid**2) @ w
+    v = np.maximum(v, 0.0)
+
+    N = m + 1.0
+    return N, np.minimum.accumulate(v)

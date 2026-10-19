@@ -1,4 +1,4 @@
-# The finite relational clock series (v1 → v8)
+# The finite relational clock series (v1 → v9)
 
 A self-contained, deliberately narrow study of one question:
 
@@ -25,12 +25,14 @@ A(t) = Σ_j p_j e^{−iδ_j t} and the fidelity is F(t) = |A(t)|².
 | `Finite_Relational_Clock_Fidelity_Bound_v5.ipynb` | **The bound.** 1 − F(t) ≤ t² Var_p(δ), hence F(t) ≥ max{0, 1 − t² Var_p(δ)}. Invariant under a common energy offset; sufficient but not tight. | complete |
 | v6 | Grid search refined (not in this repository) | *missing* |
 | `Finite_Relational_Clock_Exact_Assignment_Optimization_v7.ipynb` | Replaces the grid: for fixed labels q the optimal spacing is analytic, Δ\*(q) = C_{Eq}/V_q, with V\*(q) = V_E − C²_{Eq}/V_q. Integer assignments enumerated exhaustively, q_0 anchored to 0. | complete |
-| `Finite_Relational_Clock_Asymptotics_v8.ipynb` | **The scaling law.** Universal bound, three-level closed form, N⁻⁴ decay with exact constant, the Diophantine reformulation, and an O(N) optimiser that reaches N = 10⁶. | **current** |
+| `Finite_Relational_Clock_Asymptotics_v8.ipynb` | **The scaling law.** Universal bound, three-level closed form, N⁻⁴ decay with exact constant, the Diophantine reformulation, and an O(N) optimiser that reaches N = 10⁶. | complete |
+| `Finite_Relational_Clock_Exact_Arithmetic_v9.ipynb` | **Exact arithmetic, higher dimensions, and a correction.** Commensurability becomes an exact statement; a general optimiser for d ≥ 4 replaces enumeration; and the exponent turns out to depend on the *spectrum*, not the dimension. | **current** |
 
-Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (72 checks, in
-addition to the 24 manuscript tests).
+Code: `src/qtime/clock_design.py`; tests: `tests/test_clock_design.py` (103 checks, in
+addition to the 24 manuscript tests). Propositions 1–2 and the N⁻⁴ law are now Sec. V.C of
+the manuscript.
 
-## The three results
+## The results
 
 ### 1. The design problem is a weighted least-squares fit
 
@@ -80,44 +82,74 @@ density-matrix computation to 10⁻⁹. Two consequences:
   10³ and 10⁶: φ, 1+√2, √2 give −4.000; e−1 gives −4.06; π−1 gives −3.70 because its
   convergent 355/113 is exceptional.
 
+### 4. Exact arithmetic, and d ≥ 4 (v9)
+
+**Exact.** The general objective is a covariance cancellation ($V_E-C^2/V_q$: two numbers of
+order $V_E$), so it returns noise once the variance drops below ~10⁻¹⁴$V_E$. Rational
+arithmetic fixes that: commensurate spectra give variance **exactly zero** (2.5 is exactly 5/2),
+and the golden-ratio constant is confirmed to 3 × 10⁻⁸. What still limits precision beyond
+p ~ 10⁵ is the truncation of *r* itself, not the arithmetic — worth being clear about.
+
+**d ≥ 4.** Enumeration is $\binom{N-1}{d-1}$: hopeless. But minimising over spacing *and* offset
+is a two-parameter weighted least-squares fit, so for fixed $(\Delta,a)$ the labels decouple:
+$q_j=\mathrm{round}((E_j-a)/\Delta)$. `search_optimum` walks that design plane, iterates
+fit-then-round to a fixed point, then polishes by coordinate and window descent. It matches
+exhaustive enumeration on 300 randomised instances (d = 3 to N = 120, d = 4 to N = 36) and runs
+d = 4, N = 10⁵ in 0.1 s. It is a heuristic, and it has a documented large-N limit: its seed grid
+can miss convergent-denominator assignments, which is why the proportional family
+(`proportional_curve`, `proportional_curve_stable`) is the tool for spectra whose optimum is
+proportional.
+
+**The correction to v8.** The exponent is *not* a property of the clock dimension:
+
+| spectrum | exponent | |
+|---|---|---|
+| (0, 1, φ), d = 3 | −4.03 | one badly approximable ratio |
+| (0, 1, φ, φ²), d = 4 | −4.05 | still one ratio: labels ∝ (1, φ, φ²) |
+| (0, 1, φ, φ², φ³), d = 5 | −3.99 | still one ratio |
+| (0, 1, √2, √3), d = 4 | −3.08 | two independent ratios: simultaneous approximation |
+| (0, 1, 2, 3), d = 4 | exact 0 | commensurate: no exponent at all |
+
+So N⁻⁴ is the **one-dimensional** Diophantine rate — the rate whenever the spectrum is generated
+by powers of a single quadratic irrational — and in general the rate is set by simultaneous
+approximation in $d-2$ dimensions, which continued fractions do not describe. Prop. 1 is
+untouched by this: it never used Diophantine structure.
+
 ## Where it stands
 
 `V*_N` is monotone non-increasing in N and decreases in **plateaus**: a larger clock only
 helps when it crosses a convergent, which is why the curve is a staircase and why the
 right-hand panel of `figures/fig5_clock_scaling.png` is flat exactly at the convergents.
 
-Done: the closed form makes three-level spectra O(N); `scaling_curve` reaches N = 200 000
-in 0.1 s and N = 10⁶ in 0.6 s, against ~10¹¹ assignments for enumeration.
+Computed: three-level spectra in O(N) (`scaling_curve`, N = 10⁶ in 0.6 s), the proportional
+family to M = 10⁶ in 0.2 s (`proportional_curve_stable`), exact arithmetic anywhere precision
+matters, and d ≥ 4 at N = 10⁵ in 0.1 s. The open end is no longer cost — it is the theorems
+listed below.
 
-## Open questions — the v9 candidates
+## Open questions — the v10 candidates
 
-1. **d ≥ 4, and non-uniform weights.** The closed form is three-level and uniform-weight
-   only. With weights the optimum is a *weighted* least-squares problem, and V_E(1 − ρ²)
-   no longer collapses to a determinant of two vectors. The general statement is a
-   lattice/Diophantine problem in dimension d−2, and nothing in the series addresses it.
-2. **Prove the optimiser.** The ±2 window around nint(rq) reproduces exhaustive
-   enumeration for every spectrum tested up to N = 120, and the nearest integer alone is
-   *not* always optimal (r = φ, q = 4). No proof of the window, and no proof that the
-   optimum is attained at a convergent label rather than merely near one.
-3. **The full extremal statement.** Hurwitz extremises κ alone; the constant also contains
-   r⁴/V_E(r), and that factor is not monotone in κ. "The golden ratio is the hardest
-   three-level spectrum" is therefore supported numerically, not proved.
-4. **Precision, not physics, at large N.** For p ≳ 2000 the residual (p − rq)² falls below
-   the double-precision floor and the apparent spikes are round-off. A v9 that wants
-   N = 10⁹ needs exact integer arithmetic (`fractions.Fraction` or sympy) rather than
-   floats — cheap to do, and it would make the asymptotic constants measurable to many
-   more digits.
-5. **Feedback into the manuscript.** The manuscript's finite-clock section could carry
-   Prop. 1 and Prop. 2 as a short subsection: the first is a two-line proof, the second
-   is a clean, checkable, genuinely new statement, and together they say something the
-   paper currently cannot — that a relational clock's accuracy is governed by how well
-   its gap ratios approximate rationals, not by how finely it is spaced.
+1. **Simultaneous approximation, properly.** $(1,\sqrt2,\sqrt3)$ was measured inside the
+   proportional family only. Whether another label family beats it is open, and it is a
+   lattice-reduction question (LLL/BKZ). The right statement to aim for: the decay exponent in
+   $d$ dimensions is $-(d-2)\cdot 2 - 2$ for "generic independent" ratios, and $-4$ for spectra
+   in the rank-one (real-quadratic-field) case. Both ends are now measured; the theorem is not.
+2. **Prove the three-level optimiser.** The ±2 window around $\mathrm{nint}(rq)$ reproduces
+   enumeration for every spectrum tested up to N = 120, and the nearest integer alone is not
+   always optimal (r = φ, q = 4). No proof.
+3. **Prove the general optimiser finds the optimum** for d ≥ 4. Currently validated only where
+   enumeration is affordable.
+4. **Exact algebraic numbers.** Exact rational arithmetic removes round-off but not the
+   truncation of an irrational *r*; a genuinely high-precision claim needs $\mathbb{Q}(\sqrt5)$
+   rather than a long decimal. Then the constants at p = 10⁹ become checkable.
+5. **Non-uniform weights in closed form.** With weights the problem stays a weighted
+   least-squares fit but no longer collapses to a two-vector determinant; a determinant
+   (Gram-matrix) formula for general d and weights may well exist.
 
 ## How to pick this up
 
 ```bash
-python -m pytest tests/test_clock_design.py -q     # 72 checks, < 1 s
-# then, in order: v1, v4, v5, v7, v8
+python -m pytest tests/test_clock_design.py -q     # 103 checks, ~5 s
+# then, in order: v1, v4, v5, v7, v8, v9
 ```
 
 ## Honest caveats carried forward

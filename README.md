@@ -30,11 +30,12 @@ src/qtime/clocks.py         bipartite clock-system models, POVMs, conditioning
 src/qtime/interferometer.py relativistic / gravitational clock interferometers
 src/qtime/modular.py        brute-force Tomita-Takesaki modular operator
 src/qtime/estimates.py      all order-of-magnitude numbers quoted in the paper
-src/qtime/clock_design.py   finite-clock design: exact optimum, universal bound, N^-4 law
+src/qtime/clock_design.py   finite-clock design: exact optimum, universal bound, N^-4 law,
+                            exact rational arithmetic, optimiser for d >= 4
 scripts/make_figures.py     regenerates figures/*.pdf|png
-tests/                      96 pytest checks: 24 for the paper, 72 for the clock design
+tests/                      127 pytest checks: 24 for the paper, 103 for the clock design
 notebooks/quadrature_time.ipynb  interactive exploration
-notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8) and its README
+notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8, v9) and its README
 archive/                    earlier chat-generated drafts, critiques and transcripts
 ```
 
@@ -52,8 +53,17 @@ results are proved and machine-checked there:
   `φ^4/(135 V_E) = 0.1142350…` is matched to 3e-8, and Hurwitz's theorem makes the golden
   ratio the extremal spectrum. The horizon grows like **N²**, not N.
 
+Two further results in v9 sharpen and correct that picture: with exact rational arithmetic the
+closed form is exact (commensurate spectra give variance exactly zero, and the golden-ratio
+constant is confirmed to 3e-8), a general optimiser handles d >= 4 where enumeration is hopeless,
+and the exponent turns out **not** to be a property of the clock dimension -- spectra built from
+powers of one quadratic irrational give N^-4 in every dimension, while independent irrational
+ratios decay more slowly (N^-3.1 for (1, sqrt2, sqrt3)).
+
 The practical reading: a relational clock's accuracy is set by how well its gap ratios
-approximate rationals, not by how finely it is spaced.
+approximate rationals, not by how finely it is spaced. Short version: two propositions, a lemma,
+a figure and a remark are now Sec. V.C of the manuscript (`paper/quadrature_time.tex`,
+"How many levels does a clock need?").
 
 ## Quick start
 

@@ -191,9 +191,43 @@ def fig_clock_scaling():
     save(fig, "fig5_clock_scaling")
 
 
+# ----------------------------------------------------------------------------
+# Fig. 6  The decay exponent depends on the spectrum, not the dimension
+# ----------------------------------------------------------------------------
+def fig_clock_dimension():
+    phi = (1 + 5**0.5) / 2
+    cases = {
+        "d=3 (0,1,phi)": cd.Spectrum([0, 1, phi]),
+        "d=4 phi powers": cd.Spectrum([0, 1, phi, phi**2]),
+        "d=5 phi powers": cd.Spectrum([0, 1, phi, phi**2, phi**3]),
+        "d=4 (1,sqrt2,sqrt3)": cd.Spectrum([0, 1, 2**0.5, 3**0.5]),
+        "d=3 (0,1,sqrt2)": cd.Spectrum([0, 1, 2**0.5]),
+    }
+    M = 200_000
+    fig, ax = plt.subplots(figsize=(6.6, 4.2))
+    curves = {}
+    for name, sp in cases.items():
+        N, V = cd.proportional_curve_stable(sp, M)
+        curves[name] = (N, V)
+        good = V > 0
+        ax.loglog(N[good], V[good], lw=1.3, label=name)
+    g = np.array([30.0, M])
+    ax.loglog(g, 0.114 * 30.0**4 * g**-4, "k--", lw=1, label=r"$\propto N^{-4}$")
+    N0, V0 = curves["d=4 (1,sqrt2,sqrt3)"]
+    v0 = V0[np.searchsorted(N0, 30.0)]
+    ax.loglog(g, v0 * (30.0 / g) ** 3.1, "k:", lw=1, label=r"$\propto N^{-3.1}$")
+    ax.set(xlabel=r"clock levels $N$", ylabel=r"$V^\star_N$ (proportional family)",
+           title="the exponent depends on the spectrum, not the dimension")
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=7.5)
+    fig.tight_layout()
+    save(fig, "fig6_clock_dimension")
+
+
 if __name__ == "__main__":
     fig_conditioning()
     fig_winding()
     fig_interferometer()
     fig_cqed()
     fig_clock_scaling()
+    fig_clock_dimension()

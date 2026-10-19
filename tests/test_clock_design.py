@@ -242,3 +242,216 @@ def test_validation_errors():
         three_level_optimum(Spectrum([0.0, 1.0, 2.0, 3.0]), 8)    # wrong size
     with pytest.raises(ValueError):
         three_level_closed_form(PHI, 5, 5)                        # p must exceed q
+
+
+# ==========================================================================
+# v9: exact arithmetic and the general (d >= 4) optimiser
+# ==========================================================================
+from fractions import Fraction
+
+from qtime.clock_design import (
+    decay_exponent,
+    mismatch_variance_stable,
+    exact_variance,
+    fitted_design,
+    gap_ratio_fraction,
+    legalize_labels,
+    nearest_labels,
+    proportional_curve,
+    proportional_curve_stable,
+    search_optimum,
+    self_consistent,
+    three_level_closed_form_exact,
+)
+
+
+def exhaustive_general(spec, N):
+    """Exact optimum, scored with the same stable residual form the optimiser reports."""
+    d = spec.size
+    best, arg = spec.variance, tuple(range(d))
+    for tail in itertools.combinations(range(1, N), d - 1):
+        lab = (0,) + tail
+        v = mismatch_variance_stable(spec, lab)
+        if v < best:
+            best, arg = v, lab
+    return best, arg
+
+
+# ---- exact arithmetic ----------------------------------------------------
+def test_exact_variance_matches_the_float_formula():
+    spec = Spectrum([0.0, 1.0, PHI])
+    E = [Fraction(0), Fraction(1), gap_ratio_fraction(spec)]
+    w = [Fraction(1, 3)] * 3
+    for labels in [(0, 3, 5), (0, 8, 13)]:
+        exact = exact_variance(E, w, labels)
+        assert float(exact) == pytest.approx(mismatch_variance(spec, labels), rel=1e-9)
+
+
+def test_exact_closed_form_matches_the_float_closed_form():
+    spec = Spectrum([0.0, 1.0, PHI])
+    r = gap_ratio_fraction(spec)
+    for q, p in [(3, 5), (13, 21), (233, 377)]:
+        assert float(three_level_closed_form_exact(r, q, p)) == pytest.approx(
+            three_level_closed_form(PHI, q, p), rel=1e-12
+        )
+
+
+@pytest.mark.parametrize("labels", [(0, 2, 5), (0, 11, 27)])
+def test_commensurate_spectrum_has_exactly_zero_variance(labels):
+    """A rational spectrum is reproduced exactly -- an exact statement, not a float one."""
+    spec = Spectrum([0.0, 1.0, 2.5])
+    r = gap_ratio_fraction(spec)
+    assert exact_variance([Fraction(0), Fraction(1), r], [Fraction(1, 3)] * 3, (0, 2, 5)) == 0
+    # and V* itself is a rational number of denominator dividing the labels' geometry
+    v = exact_variance([Fraction(0), Fraction(1), r], [Fraction(1, 3)] * 3, labels)
+    assert isinstance(v, Fraction)
+
+
+def test_exact_arithmetic_survives_where_the_covariance_form_does_not():
+    """The covariance form cancels two numbers of order V_E; exact arithmetic cannot.
+
+    At p = 4181 the residual is ~1e-4 while V_E is of order 1, so
+    ``mismatch_variance`` has lost the answer entirely; the exact value still
+    pins the asymptotic constant, up to the truncation of r itself.
+    """
+    spec = Spectrum([0.0, 1.0, PHI])
+    r = gap_ratio_fraction(spec)
+    v_e = 2 * (PHI**2 - PHI + 1) / 9
+    predicted = PHI**4 / (135 * v_e)
+    q, p = 2584, 4181
+    exact = float(three_level_closed_form_exact(r, q, p)) * p**4
+    assert exact == pytest.approx(predicted, rel=1e-6)
+
+    floaty = mismatch_variance(spec, (0, q, p)) * p**4
+    assert abs(floaty / predicted - 1.0) > 1e-3          # hopeless at this size
+
+    # and the truncation of r, not the arithmetic, is what limits us next
+    q2, p2 = 46368, 75025
+    exact2 = float(three_level_closed_form_exact(r, q2, p2)) * p2**4
+    assert exact2 == pytest.approx(predicted, rel=1e-4)
+
+
+# ---- the general optimiser ----------------------------------------------
+@pytest.mark.parametrize("N", [10, 20, 40, 80, 120])
+def test_search_optimum_matches_the_exact_three_level_optimiser(N):
+    spec = Spectrum([0.0, 1.0, PHI])
+    op = search_optimum(spec, N)
+    assert op.variance == pytest.approx(three_level_optimum(spec, N)[0], rel=1e-8, abs=1e-20)
+
+
+@pytest.mark.parametrize("N", [10, 24, 60])
+def test_search_optimum_handles_weighted_three_level_spectra(N):
+    spec = Spectrum([0.0, 1.0, PHI], weights=[0.4, 0.35, 0.25])
+    ex, _ = exhaustive_general(spec, N)
+    assert search_optimum(spec, N).variance == pytest.approx(ex, rel=1e-8, abs=1e-20)
+
+
+@pytest.mark.parametrize("N", [8, 12, 16, 20, 24, 30])
+def test_search_optimum_matches_exhaustive_for_four_levels(N):
+    spec = Spectrum([0.0, 1.0, PHI, PHI**2])
+    ex, _ = exhaustive_general(spec, N)
+    assert search_optimum(spec, N).variance == pytest.approx(ex, rel=1e-8, abs=1e-20)
+
+
+def test_search_optimum_matches_exhaustive_for_other_four_level_spectra():
+    for E in ([0.0, 1.0, 2.0**0.5, 3.0**0.5], [0.0, 1.0, 2.0, 3.0], [0.0, 0.73, 1.41, 2.26]):
+        spec = Spectrum(E)
+        for N in (12, 20, 30):
+            ex, _ = exhaustive_general(spec, N)
+            assert search_optimum(spec, N).variance == pytest.approx(ex, rel=1e-8, abs=1e-20)
+
+
+def test_search_optimum_respects_the_universal_bound():
+    for E in ([0.0, 1.0, PHI, PHI**2], [0.0, 1.0, 2.0**0.5, 3.0**0.5], [0.0, 0.73, 1.41, 2.26, 3.3]):
+        spec = Spectrum(E)
+        for N in (10, 40, 200, 2000):
+            op = search_optimum(spec, N)
+            assert op.variance <= universal_bound(spec.energy_range, N) * (1 + 1e-12)
+            assert len(op.labels) == spec.size
+            assert list(op.labels) == sorted(set(op.labels))
+            assert 0 <= op.labels[0] and op.labels[-1] <= N - 1
+
+
+def test_proportional_family_finds_the_four_level_phi_optimum():
+    spec = Spectrum([0.0, 1.0, PHI, PHI**2])
+    op = search_optimum(spec, 30)
+    assert op.labels == (0, 8, 13, 21)          # labels proportional to (1, phi, phi^2)
+    assert op.self_consistent
+
+
+def test_legalize_and_nearest_labels_are_legal():
+    spec = Spectrum([0.0, 1.0, PHI])
+    for N in (4, 7, 33):
+        for delta in (0.01, 0.3, 5.0):
+            for offset in (-1.0, 0.0, 0.7):
+                lab = nearest_labels(spec, delta, offset, N)
+                assert len(lab) == 3
+                assert list(lab) == sorted(set(lab))
+                assert 0 <= lab[0] and lab[-1] <= N - 1
+    with pytest.raises(ValueError):
+        legalize_labels((0, 1, 2), 2)
+
+
+def test_fitted_design_minimises_the_joint_least_squares():
+    spec = Spectrum([0.0, 1.0, PHI])
+    labels = (0, 8, 13)
+    delta, offset = fitted_design(spec, labels)
+    def loss(d, a):
+        r = spec.energies - a - np.asarray(labels) * d
+        return float(spec.weights @ r**2)
+    best = loss(delta, offset)
+    for dd in np.linspace(0.5 * delta, 1.5 * delta, 11):
+        for aa in np.linspace(-0.3, 0.3, 11):
+            assert loss(dd, aa) >= best - 1e-15
+
+
+def test_self_consistency_flag_is_honest():
+    spec = Spectrum([0.0, 1.0, PHI])
+    best = search_optimum(spec, 40)
+    assert self_consistent(spec, best.labels, 40) == best.self_consistent
+
+
+# ---- what the exponent really is ---------------------------------------
+def test_exponent_is_four_for_phi_power_spectra_in_every_dimension():
+    for E, M in ([[0.0, 1.0, PHI], 4000],
+                 [[0.0, 1.0, PHI, PHI**2], 4000],
+                 [[0.0, 1.0, PHI, PHI**2, PHI**3], 4000]):
+        N, V = proportional_curve(Spectrum(E), M)
+        assert decay_exponent(N, V) == pytest.approx(-4.0, abs=0.12)
+
+
+def test_exponent_is_worse_for_independent_irrational_ratios():
+    """(1, sqrt2, sqrt3) needs simultaneous approximation in two dimensions."""
+    N, V = proportional_curve(Spectrum([0.0, 1.0, 2.0**0.5, 3.0**0.5]), 4000)
+    exponent = decay_exponent(N, V)
+    assert -4.0 < exponent < -2.5
+
+
+def test_commensurate_spectrum_reaches_exactly_zero():
+    N, V = proportional_curve(Spectrum([0.0, 1.0, 2.5]), 20)
+    assert V[-1] == 0.0
+
+
+# ---- the stable proportional curve ------------------------------------
+def test_stable_proportional_curve_agrees_with_exact_arithmetic():
+    for E in ([0.0, 1.0, PHI], [0.0, 1.0, PHI, PHI**2]):
+        spec = Spectrum(E)
+        N_exact, V_exact = proportional_curve(spec, 1500)
+        N_fast, V_fast = proportional_curve_stable(spec, 1500)
+        idx = np.searchsorted(N_fast, N_exact)
+        ok = idx < N_fast.size
+        rel = np.abs(V_fast[idx[ok]] - V_exact[ok]) / np.maximum(V_exact[ok], 1e-300)
+        assert rel.max() < 1e-6
+
+
+def test_stable_proportional_curve_is_monotone_and_positive():
+    N, V = proportional_curve_stable(Spectrum([0.0, 1.0, PHI]), 20000)
+    assert np.all(np.diff(V) <= 0)
+    assert np.all(V >= 0)
+    assert N[0] >= 3
+
+
+def test_proportional_stable_supports_six_levels():
+    spec = Spectrum([0.0, 1.0, PHI, PHI**2, PHI**3, PHI**4])
+    N, V = proportional_curve_stable(spec, 5000)
+    assert decay_exponent(N, V) == pytest.approx(-4.0, abs=0.15)

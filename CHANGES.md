@@ -1,5 +1,38 @@
 # Change Log
 
+## v9 of the finite-clock series, and a new subsection in the manuscript (2026-10-18)
+
+Closes the two open items from v8 and folds the results into the paper.
+
+### Manuscript (Sec. V.C, new)
+
+| Addition | Where |
+|---|---|
+| New subsection **"How many levels does a clock need?"**: Lemma (energy-mismatch fidelity bound), Proposition (universal bound, Eq. 25), Proposition (three-level closed form and the N^-4 law, Eqs. 26-27), plus a scope-and-numerics remark and a new figure. | `paper/quadrature_time.tex`, `sec:levels`; figure `fig:clockscaling` |
+| Abstract gains clause (iv); "What is new here" gains item (d) (the old (d) becomes (e)); plan-of-the-paper and discussion updated; appendix "Numerical model" now lists the new checks; new reference Hurwitz (1891); new `lemma` theorem environment. | same file |
+| Copy of `fig5_clock_scaling.pdf` into `paper/figures/` for the manuscript build. | `paper/figures/` |
+
+The subsection keeps the paper's tone: the bound is stated as unconditional but loose, the
+closed form as exact but restricted (three levels, uniform weights), and the extremal claim about
+the golden ratio as a *numerical finding* with Hurwitz supplying only the exponent-side bound,
+because the constant also carries r^4/V_E(r).
+
+**`paper/quadrature_time.pdf` is stale**: there is no TeX in this environment, so the PDF has not
+been regenerated. Run `cd paper && pdflatex quadrature_time && pdflatex quadrature_time`.
+
+### Code (v9)
+
+| Addition | Where |
+|---|---|
+| **Exact rational arithmetic.** `gap_ratio_fraction` (exact decimal value, so 2.5 is exactly 5/2), `exact_variance`, `three_level_closed_form_exact`. Commensurate spectra now give variance exactly zero instead of 1e-34; the covariance form `V_E - C²/V_q` is shown to be unusable past p ~ 2000, which is why exact arithmetic is required rather than optional. | `clock_design.py` |
+| **Numerically stable residual form** `mismatch_variance_stable`, used for all optimiser scoring and for the vectorised proportional scan. | same |
+| **General optimiser for d >= 4** `search_optimum`: grid starts in the (spacing, offset) design plane, fit-then-round fixed points, coordinate and window descent, spectrum-derived seed families. Validated against exhaustive enumeration on 300 randomised instances (d = 3 to N = 120, d = 4 to N = 36), zero mismatches; d = 4, N = 10^5 in 0.1 s. Documented as a heuristic with a known large-N coverage limit. | same |
+| **Proportional family** `proportional_curve` (exact, moderate M) and `proportional_curve_stable` (vectorised, M = 10^6 in 0.2 s), plus `decay_exponent`. | same |
+| **Correction to v8.** The exponent is not universal: powers of one quadratic irrational give N^-4 in d = 3, 4, 5; (1, sqrt2, sqrt3) gives N^-3.1. | `notebooks/finite_clock/*_v9.ipynb` |
+| New notebook | `notebooks/finite_clock/Finite_Relational_Clock_Exact_Arithmetic_v9.ipynb` (self-verifying, 17 checks) |
+| New figure | `figures/fig6_clock_dimension.{png,pdf}`, added to `scripts/make_figures.py` |
+| Tests | 103 checks in `tests/test_clock_design.py`; suite total 24 -> 127 |
+
 ## v8 of the finite-clock series (2026-10-18) — new results, no change to the manuscript
 
 Closes the question v7 left open: how the optimal mismatch variance V*_N decays with the
