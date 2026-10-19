@@ -11,6 +11,34 @@ what I changed.
 Three of the findings were real defects. One of them was a false statement in the manuscript that
 had been sitting there since v9.
 
+
+---
+
+## 0. Update (v13): the universal bound was false, and the level-count hypothesis
+
+Added after the audit above. The most serious defect found in the whole series is not in v11 — it is
+in **Proposition "Universal bound"**, which has been in the manuscript since v8 and states
+
+> For any spectrum, any weights and any ``N >= 2``: ``V*_N <= R²/(4(N−1)²)``.
+
+That is **false**. Counterexample:
+
+| E | N | V*_N | claimed bound | ratio |
+|---|---|---|---|---|
+| (0, 1e-6, 2e-6, 3e-6, 1) | 7 | **3.77e-2** at (0,1,2,3,6) | 6.94e-3 | **5.4×** |
+
+and the ratio is unbounded in ε. Every existing test passed because they used spectra with
+``R/g`` of order 1–10 and ``N`` of order 10², where the missing hypothesis holds automatically.
+
+The missing hypothesis is ``N >= 1 + R/g``, and it is *exactly* the admissibility condition of the
+v11 lemma. So the repair makes the paper stronger rather than weaker: the two results are one
+statement seen from two sides, and the proof is now four lines (admissibility → legal assignment →
+residuals in [−Δ/2, Δ/2] → Popoviciu).
+
+Consequence for how this project should be read: three of the five defects found in two rounds of
+auditing were **missing hypotheses on true statements**, not arithmetic errors. Arithmetic in this
+project has been reliable; the failure mode is stating a theorem with a hypothesis quietly assumed.
+
 ---
 
 ## 1. The admissibility lemma was false as written (fixed)

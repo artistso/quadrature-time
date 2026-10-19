@@ -373,15 +373,28 @@ Minimising $\operatorname{Var}_p(\delta)$ over the scale $\hbar\omega>0$ for a f
 
 \begin{proposition}[Universal bound]
 \label{prop:universalb}
-For any spectrum, any weights and any $N\ge2$,
+For any weights, and for any $N$ large enough to resolve the spectrum,
+\begin{equation}
+  N\;\ge\;1+\frac{R}{g},\qquad g=\min_j\,(E_{j+1}-E_j),
+  \label{eq:enoughlevels}
+\end{equation}
+one has
 \begin{equation}
   V^\star_N\le\frac{R^2}{4(N-1)^2},
   \qquad\text{hence}\qquad
   T(\varepsilon)\ge\frac{2(N-1)\sqrt{\varepsilon}}{R}
   \label{eq:universal}
 \end{equation}
-is a time up to which the infidelity is guaranteed to stay below $\varepsilon$ (Lemma~\ref{lem:fidbound}).
+is a time up to which the infidelity is guaranteed to stay below $\varepsilon$ (Lemma~\ref{lem:fidbound}). Without hypothesis~\eqref{eq:enoughlevels} the bound is false; see Remark~\ref{rem:boundfails}.
 \end{proposition}
+\begin{proof}
+Set $\Delta=R/(N-1)$, which by~\eqref{eq:enoughlevels} satisfies $\Delta\le g$. Lemma~\ref{lem:admissible} then makes $q_j=\lfloor(E_j-E_1)/\Delta+\tfrac12\rfloor$ strictly increasing, and $q_d=\lfloor R/\Delta+\tfrac12\rfloor=N-1$, so the assignment is legal. Its residuals $\delta_j=E_j-q_j\Delta$ lie in $[-\Delta/2,\Delta/2]$ and therefore span at most $\Delta$; Popoviciu's inequality bounds the variance of a bounded variable by a quarter of the square of its range, so $\operatorname{Var}(\delta)\le\Delta^2/4$. Since $V^\star_N$ is the minimum of the fitted variance over legal assignments, and fitting can only reduce the variance, $V^\star_N\le\operatorname{Var}(\delta)\le R^2/4(N-1)^2$.
+\end{proof}
+
+\begin{remark}[The level-count hypothesis cannot be dropped]
+\label{rem:boundfails}
+The restriction~\eqref{eq:enoughlevels} is not a technicality. Take $d-1$ levels crowded inside an interval of width $\varepsilon$ and one level at $R$. Separating the cluster requires a quantum no larger than $\varepsilon$, which needs $R/\varepsilon$ levels to reach the far level; a clock with fewer must either merge the cluster or abandon the far level, and it does both badly. For $E=(0,10^{-6},2\times10^{-6},3\times10^{-6},1)$ with $N=7$ the optimum over legal assignments is $V^\star_7=3.8\times10^{-2}$ at labels $(0,1,2,3,6)$, against a claimed bound of $R^2/4(N-1)^2=6.9\times10^{-3}$: a violation by a factor $5.4$, and the ratio grows without limit as $\varepsilon\to0$. So the bound holds exactly when the clock has enough levels to satisfy the admissibility condition of Lemma~\ref{lem:admissible}, and the two results are one statement seen twice. What survives unconditionally is the trivial bound $V^\star_N\le V_E\le R^2/4$: no clock can do worse than not fitting at all.
+\end{remark}
 \begin{proof}
 Round each shifted energy to its nearest label. Then $|\delta_j|\le\hbar\omega/2$, so the $\delta_j$ span at most $\hbar\omega$ and Popoviciu's inequality, $\operatorname{Var}\le(\text{range})^2/4$, gives $\operatorname{Var}_p(\delta)\le(\hbar\omega)^2/4$. The largest label is $R/\hbar\omega$, which must fit in $N-1$ steps, so $\hbar\omega\ge R/(N-1)$. Insert into Lemma~\ref{lem:fidbound} and solve for $t$.
 \end{proof}
@@ -424,7 +437,7 @@ hence $q_{j+1}=\lfloor u_{j+1}+\tfrac12\rfloor\ge q_j+1>q_j$. For the converse, 
 
 \begin{remark}[What tuning the spacing buys]
 \label{rem:tuning}
-Propositions~\ref{prop:universalb} and~\ref{prop:closedform} treat $\hbar\omega$ as a free design parameter, which is right for an ideal clock but not for a real one. With a *fixed* quantum the assignment is the rounding assignment of Proposition~\ref{prop:universalb}, and every rounding residual lies within one quantum of zero, so the variance is bounded by $\Delta^2/4=R^2/4(N-1)^2$ whatever the spectrum. That bound holds for \emph{any} assignment, hence a pinned clock cannot beat the $N^{-2}$ envelope, and numerically it sits on it up to the Diophantine fluctuation visible in Fig.~\ref{fig:tuning}(a) --- a horizon growing only like $N$. The $N^{-4}$ law of Proposition~\ref{prop:closedform} requires the freedom to choose the spacing, i.e. to sit at a convergent of the gap ratio, and it then beats the pinned clock by a factor that grows like $N^2$. Figure~\ref{fig:tuning} shows both the two scalings and that gain. So the sharp statement is conditional, and this is the scope condition the two propositions should be read with: \emph{the accuracy a finite clock achieves is a statement about clock design, not about clocks as found.} Lemma~\ref{lem:admissible} is what to apply when the quantum is not free: a quantum above the smallest gap cannot in general resolve the levels at all, however many levels are available.
+Propositions~\ref{prop:universalb} and~\ref{prop:closedform} treat $\hbar\omega$ as a free design parameter, which is right for an ideal clock but not for a real one. With a *fixed* quantum the assignment is the rounding assignment of Proposition~\ref{prop:universalb} whenever that quantum is admissible (Lemma~\ref{lem:admissible}); every rounding residual then lies within one quantum of zero, so the variance is bounded by $\Delta^2/4$. That bound holds for \emph{any} assignment, hence a pinned clock cannot beat the $N^{-2}$ envelope, and numerically it sits on it up to the Diophantine fluctuation visible in Fig.~\ref{fig:tuning}(a) --- a horizon growing only like $N$. The $N^{-4}$ law of Proposition~\ref{prop:closedform} requires the freedom to choose the spacing, i.e. to sit at a convergent of the gap ratio, and it then beats the pinned clock by a factor that grows like $N^2$. Figure~\ref{fig:tuning} shows both the two scalings and that gain. So the sharp statement is conditional, and this is the scope condition the two propositions should be read with: \emph{the accuracy a finite clock achieves is a statement about clock design, not about clocks as found.} Lemma~\ref{lem:admissible} is what to apply when the quantum is not free: a quantum above the smallest gap cannot in general resolve the levels at all, however many levels are available.
 \end{remark}
 
 \begin{remark}[Scope and numerics]
@@ -439,7 +452,7 @@ We evaluate that difference exactly in $\mathbb{Q}(\sqrt5)$, where it is a ratio
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig5_clock_scaling.pdf}
-  \caption{Finite-clock design for three-level spectra. (a)~The optimal mismatch variance $V^\star_N$ as a function of the number of clock levels: a staircase, because a larger clock helps only when it crosses a convergent of the gap ratio. The dashed line is the $N^{-4}$ envelope. (b)~$p^4V^\star_p$ at convergent labels, where the optimum re-equilibrates. Spectra built from a single badly approximable ratio sit on a flat envelope; the golden ratio attains the constant $\varphi^4/(135V_E)=0.1142$ (dashed), and the $\pi$-like spectrum dips below it at its exceptional convergent $355/113$. The universal bound~\eqref{eq:universal} is respected throughout but is two to five orders of magnitude above the curves.}
+  \caption{Finite-clock design for three-level spectra. (a)~The optimal mismatch variance $V^\star_N$ as a function of the number of clock levels: a staircase, because a larger clock helps only when it crosses a convergent of the gap ratio. The dashed line is the $N^{-4}$ envelope. (b)~$p^4V^\star_p$ at convergent labels, where the optimum re-equilibrates. Spectra built from a single badly approximable ratio sit on a flat envelope; the golden ratio attains the constant $\varphi^4/(135V_E)=0.1142$ (dashed), and the $\pi$-like spectrum dips below it at its exceptional convergent $355/113$. The universal bound~\eqref{eq:universal} is respected throughout --- every spectrum and every $N$ shown satisfies its hypothesis~\eqref{eq:enoughlevels} --- but it is two to five orders of magnitude above the curves.}
   \label{fig:clockscaling}
 \end{figure}
 

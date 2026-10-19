@@ -162,11 +162,23 @@ def fig_clock_scaling():
         "e-1     (0,1,e-1)": cd.Spectrum([0, 1, np.e - 1]),
     }
     nmax, pmax = 200_000, 2000
+    # The universal bound is a theorem only for N >= 1 + R/g (v13), and the
+    # caption quotes it, so start the staircase inside that range for every
+    # spectrum shown and assert it.  sqrt2 is the binding case: R/g = 3.41.
+    def _floor(sp):
+        gaps = np.diff(sp.energies)
+        return 1.0 + float(sp.energies[-1] - sp.energies[0]) / float(gaps.min())
+
+    N0 = int(np.ceil(max(_floor(sp) for sp in specs.values())))
     fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.2))
     for name, sp in specs.items():
         N, V = cd.scaling_curve(sp, nmax)
+        keep = N >= N0
+        assert np.all(keep) or np.any(keep)
+        N, V = N[keep], V[keep]
+        assert cd.bound_applies(sp, int(N[0])), (name, int(N[0]))
         ax[0].loglog(N, V, lw=1.2, label=name)
-    guide = np.array([30.0, nmax])
+    guide = np.array([max(30.0, float(N0)), float(nmax)])
     v_ref = cd.three_level_optimum(specs["golden  (0,1,phi)"], 10)[0]
     ax[0].loglog(guide, v_ref * 10**4 * guide**-4, "k--", lw=1, label=r"$\propto N^{-4}$")
     ax[0].set(xlabel=r"clock levels $N$", ylabel=r"$V^\star_N$",
@@ -420,6 +432,7 @@ def fig_tuning():
     spec = cd.Spectrum([0.0, 1.0, phi])
     R = float(phi)
     Ns = np.unique(np.round(np.geomspace(10, 3000, 14)).astype(int))
+    assert all(cd.bound_applies(spec, int(N)) for N in Ns)      # bound is a theorem here
 
     universal = np.array([cd.universal_bound(R, int(N)) for N in Ns])
     fixed = np.array([cs.mean_variance_at_quantum(spec, R / (N - 1), 401) for N in Ns])

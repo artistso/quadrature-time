@@ -69,6 +69,7 @@ __all__ = [
     "fidelity_lower_bound",
     "time_horizon",
     "universal_bound",
+    "bound_applies",
     "universal_horizon",
     "exhaustive_optimum",
     "three_level_optimum",
@@ -297,17 +298,39 @@ def time_horizon(variance: float, epsilon: float) -> float:
 
 
 def universal_bound(energy_range: float, N: int) -> float:
-    """Spectrum-free bound V*_N <= R^2 / (4 (N-1)^2).
+    """Bound V*_N <= R^2 / (4 (N-1)^2), valid when the clock resolves the spectrum.
 
-    Proof: round every shifted E_j to its nearest label. Then |delta_j| <= Delta/2,
-    so the delta_j span at most Delta and Popoviciu's inequality
-    (Var <= (range)^2/4) gives Var <= Delta^2/4. The largest label is
-    R/Delta, which must fit in N-1 steps, so Delta >= R/(N-1).
+    Proof.  Put Delta = R/(N-1).  *Provided* Delta <= g (g the smallest spectral
+    gap) the rounding labels of Lemma `lem:admissible` are strictly increasing and
+    the largest is N-1, so the assignment is legal; its residuals lie in
+    [-Delta/2, Delta/2], hence their range is at most Delta and Popoviciu's
+    inequality (Var <= range^2/4) gives Var <= Delta^2/4.  The fitted optimum is no
+    worse than that assignment, so V*_N <= Delta^2/4.
+
+    The proviso is essential and is NOT automatic: it is equivalent to
+    ``N >= 1 + R/g``.  Without it the bound is false.  For the spectrum
+    (0, 1e-6, 2e-6, 3e-6, 1) with N = 7 the optimum over legal assignments is
+    3.8e-2 against a bound of 6.9e-3 -- a violation by 5.4x, unbounded as the
+    cluster narrows.  Use :func:`bound_applies` before quoting the bound.  What
+    holds unconditionally is V*_N <= V_E <= R^2/4.
     """
     N = int(N)
     if N < 2:
         raise ValueError("a clock needs at least two levels")
     return float(energy_range) ** 2 / (4.0 * (N - 1) ** 2)
+
+
+
+def bound_applies(spectrum: Spectrum, N: int) -> bool:
+    """Does the level count satisfy N >= 1 + R/g, i.e. Delta = R/(N-1) <= g?
+
+    This is exactly the hypothesis under which :func:`universal_bound` is valid.
+    """
+    gaps = np.diff(spectrum.energies)
+    if gaps.size == 0 or float(gaps.min()) <= 0.0:
+        return False
+    rng = float(spectrum.energies[-1] - spectrum.energies[0])
+    return bool(N >= 1 + rng / float(gaps.min()))
 
 
 def universal_horizon(energy_range: float, N: int, epsilon: float) -> float:

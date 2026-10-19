@@ -1,6 +1,62 @@
 # Change Log
 
-## v12: adversarial audit of the new material — three defects found and fixed (2026-10-18)
+## v13: the universal bound was false as stated — a real counterexample (2026-10-18)
+
+Auditing every analytic identity in the manuscript (new harness: `scripts/verify_claims.py`, 11
+checks, also run under pytest) turned up a **false proposition**, not a missing hypothesis.
+
+### Defect 4 (the serious one): Proposition "Universal bound" is false without a level-count condition
+
+As stated — *"For any spectrum, any weights and any N >= 2, V*_N <= R^2/4(N-1)^2"* — the proposition
+is **false**. Counterexample:
+
+| E | N | V*_N (optimum over legal labels) | claimed bound | ratio |
+|---|---|---|---|---|
+| (0, 1e-6, 2e-6, 3e-6, 1) | 7 | **3.77e-2** at (0,1,2,3,6) | 6.94e-3 | **5.4x** |
+
+The ratio is unbounded: crowd d−1 levels into a window of width ε and put one at R, and separating
+the cluster while reaching the far level needs ~R/ε levels. A randomised search over legal
+assignments found violations up to 2.2x at d = 4 and 5.4x at d = 5; none of them involved an illegal
+assignment, so this is a genuine defect in the statement rather than in the optimiser.
+
+The existing tests all passed because they used spectra with R/g of order 1 to 10 and N of order
+10² — where `N >= 1 + R/g` holds automatically. The hypothesis was invisible.
+
+**The repair, which is a genuine improvement of the paper.** The bound is true exactly when the clock
+has enough levels to resolve the spectrum:
+
+    N >= 1 + R/g          (g = smallest gap)
+
+Under that condition Δ = R/(N−1) ≤ g, so v11's admissibility lemma makes the rounding assignment
+legal, its residuals lie in [−Δ/2, Δ/2], Popoviciu gives Var ≤ Δ²/4, and the fitted optimum is no
+worse. That is now the proof in the paper. So **the universal bound and the admissibility lemma are
+one statement seen twice** — the lemma I added in v11 turns out to be exactly the hypothesis the
+older proposition was missing.
+
+Also changed:
+
+- New Remark (`rem:boundfails`) recording the counterexample and the unconditional survivors
+  (`V*_N <= V_E <= R^2/4`), so the defect is documented rather than papered over.
+- `clock_design.bound_applies(spectrum, N)`; `universal_bound`'s docstring now states the proviso and
+  the counterexample; 4 new tests assert the violation *and* the validity under the hypothesis.
+- `make_figures.py` now asserts the hypothesis for every spectrum/N in Figs. 5 and 9 before the
+  captions quote the bound; Fig. 5's staircase is drawn from N0 = ceil(1 + R/g) (sqrt2 was the
+  binding case at N = 6). Fig. 5 regenerated.
+- Fixed v11's claim that the bound holds "whatever the spectrum" — true only when admissible.
+
+### Harness fixes (my errors, not the paper's)
+
+Two failures in the first pass were the checker's fault and are worth recording:
+
+- `eq:winding` differed by exactly 1.047. The proposition states the real factor 1/(M sin πν); my
+  check compared it against the complex D_M, which has an extra e^{−iπ(M−1)ν} phase.
+- `eq:proper` "failed" at 1e-5 residual: I compared a first-order truncation at δ = 1e-4 against a
+  relative tolerance. The right test is the *convergence rate* — halving δ must halve the error —
+  which now confirms first order with rate 2.00.
+- Two `eq:szego` checks failed because I tried to see a delta function by quadrature of a rapidly
+  oscillating geometric series. Replaced by the pole/residue test x/(1−e^{ix}) → i.
+
+## ## v12: adversarial audit of the new material — three defects found and fixed (2026-10-18)
 
 `REVIEW.md` audited the original draft; nothing had audited v8–v11. This entry is that audit.
 Full write-up in `notes/referee_audit_v11.md`.

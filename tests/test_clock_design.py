@@ -752,3 +752,81 @@ def test_a_pinned_quantum_never_beats_the_universal_bound():
             v = mean_variance_at_quantum(s, R / (N - 1), 401)
             if np.isfinite(v):
                 assert v <= universal_bound(R, N) * (1 + 1e-12)
+
+
+# ==========================================================================
+# v13: the universal bound needs a level-count hypothesis, and it is exactly
+#      the admissibility condition
+# ==========================================================================
+import itertools
+
+from qtime.clock_design import bound_applies
+
+
+def _best_over_legal_labels(spectrum, N):
+    """True optimum over every legal label vector with labels in [0, N)."""
+    best = np.inf
+    for comb in itertools.combinations(range(N), spectrum.size):
+        v = mismatch_variance(spectrum, comb)
+        if v < best:
+            best = v
+    return best
+
+
+def test_universal_bound_fails_without_the_level_count_hypothesis():
+    """Recorded counterexample: V*_N can exceed R^2/4(N-1)^2 by a large factor.
+
+    Four of the five levels are crowded within 3e-6 of zero and the fifth is at 1.
+    Separating the cluster needs a quantum no larger than 1e-6, i.e. ~1e6 levels to
+    reach the far level; with N = 7 the clock cannot do both.
+    """
+    E = [0.0, 1e-6, 2e-6, 3e-6, 1.0]
+    S = Spectrum(E)
+    N = 7
+    v = _best_over_legal_labels(S, N)
+    bound = universal_bound(1.0, N)
+    assert not bound_applies(S, N)
+    assert v / bound > 5.0                     # 5.434, and unbounded as the cluster narrows
+    # and the trivial unconditional bound still holds
+    assert v <= S.variance <= 1.0 / 4
+
+
+def test_universal_bound_holds_whenever_it_applies():
+    """With N >= 1 + R/g there are no violations, over randomised spectra."""
+    rng = np.random.default_rng(9)
+    checked = 0
+    for _ in range(150):
+        d = int(rng.integers(3, 6))
+        E = np.sort(rng.uniform(0.0, 1.0, d))
+        E = E - E[0]
+        if E[-1] < 1e-9:
+            continue
+        S = Spectrum(E)
+        R = float(E[-1])
+        for N in range(d, 12):
+            if not bound_applies(S, N):
+                continue
+            v = _best_over_legal_labels(S, N)
+            assert v <= universal_bound(R, N) * (1 + 1e-12)
+            checked += 1
+    assert checked > 200
+
+
+def test_bound_applies_is_exactly_the_admissibility_condition():
+    """Delta = R/(N-1) <= g, the same g as the admissibility lemma."""
+    rng = np.random.default_rng(4)
+    for _ in range(60):
+        d = int(rng.integers(3, 6))
+        E = np.sort(rng.uniform(0.0, 2.0, d))
+        S = Spectrum(E)
+        g = float(np.diff(E).min())
+        R = float(E[-1] - E[0])
+        for N in range(d, 15):
+            assert bound_applies(S, N) == bool(R / (N - 1) <= g * (1 + 1e-12))
+
+
+def test_figure_cases_are_inside_the_hypothesis():
+    """The figures quote the bound only where it applies."""
+    golden = Spectrum([0.0, 1.0, PHI])
+    for N in (10, 30, 100, 300, 1000, 3000):
+        assert bound_applies(golden, N)
