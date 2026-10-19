@@ -36,6 +36,7 @@ scripts/make_figures.py     regenerates figures/*.pdf|png
 tests/                      127 pytest checks: 24 for the paper, 103 for the clock design
 notebooks/quadrature_time.ipynb  interactive exploration
 notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8, v9) and its README
+notes/                      working notes on ideas outside the manuscript (not claims)
 archive/                    earlier chat drafts and transcripts; author sketches
 ```
 
