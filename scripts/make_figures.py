@@ -18,6 +18,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "src"))
 
+from qtime import clock_design as cd  # noqa: E402
 from qtime import clocks as qc  # noqa: E402
 from qtime import estimates as est  # noqa: E402
 from qtime import interferometer as ifm  # noqa: E402
@@ -146,8 +147,53 @@ def fig_cqed():
     save(fig, "fig4_cqed")
 
 
+# ----------------------------------------------------------------------------
+# Fig. 5  Finite-clock scaling: the N^-4 law for three-level spectra
+# ----------------------------------------------------------------------------
+def fig_clock_scaling():
+    phi = (1 + 5**0.5) / 2
+    specs = {
+        "golden  (0,1,phi)": cd.Spectrum([0, 1, phi]),
+        "silver  (0,1,1+sqrt2)": cd.Spectrum([0, 1, 1 + 2**0.5]),
+        "sqrt2   (0,1,sqrt2)": cd.Spectrum([0, 1, 2**0.5]),
+        "pi-1    (0,1,pi-1)": cd.Spectrum([0, 1, np.pi - 1]),
+        "e-1     (0,1,e-1)": cd.Spectrum([0, 1, np.e - 1]),
+    }
+    nmax, pmax = 200_000, 2000
+    fig, ax = plt.subplots(1, 2, figsize=(11.5, 4.2))
+    for name, sp in specs.items():
+        N, V = cd.scaling_curve(sp, nmax)
+        ax[0].loglog(N, V, lw=1.2, label=name)
+    guide = np.array([30.0, nmax])
+    v_ref = cd.three_level_optimum(specs["golden  (0,1,phi)"], 10)[0]
+    ax[0].loglog(guide, v_ref * 10**4 * guide**-4, "k--", lw=1, label=r"$\propto N^{-4}$")
+    ax[0].set(xlabel=r"clock levels $N$", ylabel=r"$V^\star_N$",
+              title="optimal mismatch variance (staircase)")
+    ax[0].legend(fontsize=7, ncol=2)
+
+    r_phi = phi
+    v_e = 2 * (r_phi**2 - r_phi + 1) / 9
+    asymptote = r_phi**4 / (135 * v_e)
+    for name, sp in specs.items():
+        r = sp.energies[2] / sp.energies[1]
+        conv = [(pp, qq) for pp, qq in cd.convergents(r, 40) if 8 <= pp <= pmax]
+        pp = np.array([c[0] for c in conv], float)
+        vv = np.array([cd.mismatch_variance(sp, (0, qq, pp_)) for pp_, qq in conv])
+        ax[1].loglog(pp, vv * pp**4, "o-", ms=3.5, lw=1, label=name)
+    ax[1].axhline(asymptote, color="k", ls="--", lw=1,
+                  label=r"golden constant $\varphi^4/(135V_E)$")
+    ax[1].set(xlabel=r"largest label $p$ (convergent labels, $p\leq2000$)",
+              ylabel=r"$p^4\,V^\star_p$", title=r"flat = $N^{-4}$ law")
+    ax[1].legend(fontsize=7, ncol=2)
+    for a in ax:
+        a.grid(alpha=0.3)
+    fig.tight_layout()
+    save(fig, "fig5_clock_scaling")
+
+
 if __name__ == "__main__":
     fig_conditioning()
     fig_winding()
     fig_interferometer()
     fig_cqed()
+    fig_clock_scaling()

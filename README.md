@@ -30,18 +30,30 @@ src/qtime/clocks.py         bipartite clock-system models, POVMs, conditioning
 src/qtime/interferometer.py relativistic / gravitational clock interferometers
 src/qtime/modular.py        brute-force Tomita-Takesaki modular operator
 src/qtime/estimates.py      all order-of-magnitude numbers quoted in the paper
+src/qtime/clock_design.py   finite-clock design: exact optimum, universal bound, N^-4 law
 scripts/make_figures.py     regenerates figures/*.pdf|png
-tests/                      24 pytest checks of the claims in the paper
+tests/                      96 pytest checks: 24 for the paper, 72 for the clock design
 notebooks/quadrature_time.ipynb  interactive exploration
-notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7) and its README
+notebooks/finite_clock/     the finite-clock design series (v1, v4, v5, v7, v8) and its README
 archive/                    earlier chat-generated drafts, critiques and transcripts
 ```
 
 `notebooks/finite_clock/README.md` is the entry point for the one piece of this project
 that is a self-contained research line: how accurately a finite, equally spaced clock
-spectrum can represent an arbitrary (incommensurate) spectrum, and for how long. It
-records the fidelity bound of v5, the exact assignment optimum of v7, a universal
-N-level bound that follows from them, and precisely what the next step is.
+spectrum can represent an arbitrary (incommensurate) spectrum, and for how long. Three
+results are proved and machine-checked there:
+
+* the design problem is a weighted least-squares fit, with an analytic optimal spacing;
+* a universal, spectrum-free bound `V*_N <= R^2/(4(N-1)^2)`, so an infidelity ε is
+  guaranteed for `T >= 2(N-1)sqrt(ε)/R` — linear in the clock size, unconditionally;
+* for three-level spectra a closed form `V*(q,p) = (p-rq)^2 / [(p+q)^2+(2q-p)^2+(2p-q)^2]`,
+  which makes clock design simultaneous Diophantine approximation and yields **N^-4**
+  decay with constant `κ(r)^2 r^4/(27 V_E)`. At Fibonacci labels the golden-ratio value
+  `φ^4/(135 V_E) = 0.1142350…` is matched to 3e-8, and Hurwitz's theorem makes the golden
+  ratio the extremal spectrum. The horizon grows like **N²**, not N.
+
+The practical reading: a relational clock's accuracy is set by how well its gap ratios
+approximate rationals, not by how finely it is spaced.
 
 ## Quick start
 
