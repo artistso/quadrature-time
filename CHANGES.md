@@ -1,5 +1,20 @@
 # Change Log
 
+## Author sketch -> Figure 1 (2026-10-18)
+
+An author sketch ("2 AM no longer exists") turned out to be a literal illustration of
+winding marginalization, so it is now **Fig. 1** (`fig:cover`) with a paragraph in Sec. II.D.
+
+| Change | Where |
+|---|---|
+| New paragraph in Sec. II.D: the clock face as a covering map, why a reading needs its winding number, and why a *global* relabeling is a rotation of the face (inert) while a relabeling applied *after a seam* is a cut of the cover that deletes a label (DST). | `quadrature_time.tex`, after Prop. 2 |
+| New `\label{sec:zak}` on the Zak-transform subsection, referenced from that paragraph. | Sec. II.C |
+| New Fig. 1: (a) one reading, four instants; (b) relabeling function $g(t)$, constant for a global shift, a step for DST. The caption's numbers are asserted in the plotting code (4 occurrences of 2 AM in 96 h; 23 distinct labels on the seam day; no extra jumps under a global shift), so the figure cannot drift from its caption. | `scripts/make_figures.py::fig_clock_cover`, `figures/fig_cover.*` |
+| Sketches archived with a reading of each; the second (time-dilation vortex) is recorded as *not yet physics*. | `archive/sketches/`, `archive/README.md` |
+
+Figure numbers shift by one from here on (the conditioning figure becomes Fig. 2, and so on);
+all cross-references are by label, so nothing else needed changing.
+
 ## v9 of the finite-clock series, and a new subsection in the manuscript (2026-10-18)
 
 Closes the two open items from v8 and folds the results into the paper.

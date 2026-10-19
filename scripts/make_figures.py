@@ -224,7 +224,85 @@ def fig_clock_dimension():
     save(fig, "fig6_clock_dimension")
 
 
+# ----------------------------------------------------------------------------
+# Fig. 2  The clock face has no date: covering, relabeling, and a seam
+# ----------------------------------------------------------------------------
+def fig_clock_cover():
+    """Daylight saving time as a literal illustration of winding marginalization.
+
+    The reading map t -> t mod 24 h is a covering of R onto the circle. A global
+    shift is a rotation of the face (physically inert); a shift applied only
+    after a seam is not -- it cuts the cover and deletes a label segment.
+    Everything asserted in the caption is computed here.
+    """
+    t = np.arange(0.0, 96.0, 1.0 / 60.0)
+    reading = np.mod(t, 24.0)
+
+    # (a) one reading, many instants
+    hits = np.flatnonzero(np.isclose(reading, 2.0, atol=1e-9))
+    n_hits = hits.size
+    assert n_hits == 4, n_hits                      # 2 AM occurs once per day
+
+    # (b) three maps
+    rotation = np.mod(t + 5.0, 24.0)                # global relabeling
+    seam_t = 50.0                                   # clocks go forward at 50 h
+    dst = np.where(t < seam_t, np.mod(t, 24.0), np.mod(t + 1.0, 24.0))
+    step = np.diff(dst)
+    wraps = np.abs(step + 24.0) < 1e-6              # benign: the covering closes
+    cuts = step > 0.5                               # the seam itself (a forward jump)
+    assert cuts.sum() == 1, cuts.sum()
+    assert np.all(np.abs(step[wraps] + 24.0) < 1e-6)
+    assert step[cuts][0] > 0.9                      # it skips a whole hour
+    seam_day = (t >= 48.0) & (t < 72.0)
+    labels_seam_day = {int(np.floor(x)) % 24 for x in dst[seam_day]}
+    labels_normal = {int(np.floor(x)) % 24 for x in reading[seam_day]}
+    assert len(labels_normal) == 24
+    assert len(labels_seam_day) == 23 and 2 not in labels_seam_day
+
+    fig, ax = plt.subplots(1, 2, figsize=(11.4, 3.9))
+
+    ax[0].plot(t, reading, "C0-", lw=1.4)
+    ax[0].axhline(2.0, color="0.4", ls="--", lw=0.9)
+    ax[0].plot(t[hits], np.full(n_hits, 2.0), "o", color="C3", ms=5, zorder=5)
+    for k, i in enumerate(hits):
+        ax[0].annotate(rf"$m={k}$", (t[i], 2.0), textcoords="offset points",
+                       xytext=(2, 7), fontsize=8, color="C3")
+    ax[0].set(xlabel="physical time  [h]", ylabel=r"clock reading  $\theta/2\pi$  [h]",
+              title="(a) one reading, four instants: the face has no date",
+              ylim=(-0.5, 25), xlim=(0, 96))
+    ax[0].set_yticks([0, 6, 12, 18, 24])
+
+    # The clean way to compare: the relabeling function itself, g(t) = label(t) - t.
+    g_rot = (rotation - reading + 12.0) % 24.0 - 12.0      # global shift: constant
+    g_dst = (dst - reading + 12.0) % 24.0 - 12.0           # DST: a step
+    ax[1].plot(t, np.zeros_like(t), color="0.72", lw=1.2, label="no relabeling:  $g=0$")
+    ax[1].step(t, g_rot, "k--", lw=1.3, where="post", label="global shift:  $g=5$ h")
+    ax[1].step(t, g_dst, "C3-", lw=1.6, where="post", label="DST:  a step in $t$")
+    ax[1].axvline(seam_t, color="C3", lw=0.8, ls=":")
+    ax[1].annotate("seam", (seam_t, 4.3), textcoords="offset points", xytext=(4, 0),
+                   fontsize=8, color="C3")
+    ax[1].annotate("a constant offset is a rotation of the\nface: every label is still "
+                   "displayed\nsomewhere (inert, no $m$ lost)",
+                   (2.0, 5.35), fontsize=7.5, color="k")
+    ax[1].annotate("a step cuts the cover: the seam hour\nis skipped, so 23 labels are "
+                   "displayed\nthat day, not 24",
+                   (seam_t + 0.8, 0.55), textcoords="offset points", xytext=(6, 22),
+                   fontsize=7.5, color="C3",
+                   arrowprops=dict(arrowstyle="->", color="C3", lw=0.8))
+    ax[1].set(xlabel="physical time  [h]", ylabel=r"relabeling  $g(t)=\theta/2\pi-t$  [h]",
+              title="(b) a rotation of the face is inert; a cut is not",
+              ylim=(-1.2, 7.0), xlim=(0, 96))
+    ax[1].set_yticks([0, 2, 4, 6])
+    ax[1].legend(fontsize=7.5, loc="lower right")
+    ax[1].legend(fontsize=7.5, loc="lower right", ncol=1)
+    for a in ax:
+        a.grid(alpha=0.25)
+    fig.tight_layout()
+    save(fig, "fig_cover")
+
+
 if __name__ == "__main__":
+    fig_clock_cover()
     fig_conditioning()
     fig_winding()
     fig_interferometer()

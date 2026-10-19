@@ -48,3 +48,33 @@ repository root next to a partial copy of `.git/objects` (38-character hex filen
 these chat artifacts. File contents were byte-identical to the bundle, so nothing was
 lost; the layout was restored from it and the strays were removed. See `CHANGES.md`,
 "Repository maintenance".
+
+## `sketches/`
+
+Hand drawings made by the author while the finite-clock series was being written. They are raw
+material, not claims; nothing here is cited by the paper.
+
+**`2026-10-18_dst_seam.jpg` — "2 AM no longer exists."** Daylight saving time drawn as an
+operator on clock labels: FALL and SPRING arrive at the work day, LATE and EARLY branch off it,
+the labels 2 AM and 3 AM sit on either side of a line, and the pair
+$\langle t_a e^{i\theta} \mid t_b e^{i\theta_2}\rangle$ is written underneath. Despite the
+joke framing this is a correct and sharp statement about the manuscript's core topic, and it is
+now **Figure 1** (`fig:cover`) with the surrounding paragraph in Sec. II.D:
+
+- the reading map $t\mapsto\theta/2\pi$ is a covering of $\mathbb{R}$ onto $S^1$, so "2 AM"
+  names four distinct instants in four days and needs the winding number $m$;
+- a *global* relabeling is a rotation of the face — physically inert, no $m$ lost, undetectable;
+- a relabeling applied *after a seam* (DST) is not a rotation but a cut of the cover: the seam
+  hour is never displayed that day, so the clock shows 23 distinct hours, not 24.
+
+The arithmetic is checked in `make_figures.py` (4 occurrences of 2 AM in 96 h; 23 labels on the
+seam day; zero extra jumps under a global shift), so the caption cannot drift from the figure.
+
+**`2026-10-18_time_dilation_vortex.jpg` — "slowest time / fastest spin".** A qualitative picture of
+a vortex carrying a time-dilation spectrum: $\gamma$, $N$, $\Delta N$, entropy/action, a
+$Δ \cdot 2\pi^2$ factor along $S_N$, a thermal $\pm\cos$ component, "fastest confit",
+"longest time of vortex", and the whole thing repeated inside a circle labelled *Universe* — the
+same structure at a larger scale. **Status: not used, and not yet physics.** It is a picture of
+structure, in the spirit of §IX.C's open directions, and it would need to be turned into a
+concrete claim (which sector? which clock constraint? what is the spectrum $S_N$?) before it could
+appear anywhere. Kept because the composition is right even where the notation is not yet defined.
