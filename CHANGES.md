@@ -1,5 +1,65 @@
 # Change Log
 
+## v14: T_C derived — the framework's last free parameter is gone (2026-10-18)
+
+REVIEW §M2 is the referee's central objection: *"it cannot by itself tell the conjecture apart from
+standard QM... the paper must say what the conjecture predicts beyond known clock noise."* Everything
+quantitative in the paper contained the free parameter `T_C`, and a free parameter makes any prediction
+unfalsifiable. v10 tried to pin it cosmologically and failed. This is the surviving route.
+
+### The derivation (new Sec. V.D, `sec:tc`, Proposition `prop:tc`)
+
+For a clock that is a cavity mode of frequency ω, linewidth κ, mean photon number n̄:
+
+    D_phi = kappa/(2 nbar)              Schawlow-Townes phase diffusion
+    T_C   = D_phi/omega^2 = kappa/(2 nbar omega^2)
+    Gamma_jk = kappa omega_jk^2/(4 nbar omega^2)
+    T_2   = 4 nbar omega^2/(kappa omega_jk^2)
+
+The factor `D = κ/(2n̄)` is not asserted but checked against the textbook linewidth:
+`Δν_FWHM = κ/(4π n̄)` ↔ HWHM `κ/(4n̄)`; phase diffusion gives correlation `e^{−Dt/2}` with HWHM `D/2`;
+equating gives `D = κ/(2n̄)`.
+
+### Numbers (transmon 5 GHz, cavity 6 GHz, κ/2π = 1 MHz) — new Table III
+
+| n̄ | 1 | 10 | 10² | 10³ | 10⁴ |
+|---|---|---|---|---|---|
+| Γ [s⁻¹] | 1.1e6 | 1.1e5 | 1.1e4 | **1.1e3** | 1.1e2 |
+| T₂ [s] | 9.2e-7 | 9.2e-6 | 9.2e-5 | **9.2e-4** | 9.2e-3 |
+
+Measured transmon T₂ is 0.1–1 ms. At n̄ ≈ 10³ the prediction sits at 0.92 ms — **inside the measured
+window**. The framework can now be wrong.
+
+### This flips the verdict on the circuit-QED protocol, and the paper says so
+
+The old exclusion used the *heuristic* `T_C ~ ħ/ΔE_C`, which with `ΔE_C = ħω_s` gives `T₂ ≲ 10 ns`. The
+derived `T_C` is 2.2e-18 s at n̄ = 10³ — seven orders smaller — so the same identification gives
+`T₂ ≈ 0.9 ms`. The exclusion therefore belongs to the dimensional estimate, not to the framework.
+
+- Abstract (v) rewritten; intro contribution (e) rewritten; the intro's "empirically equivalent" caveat
+  now points at `sec:tc`.
+- §VI item 6 distinguishes heuristic (excluded) from derived (testable).
+- The protocol's predicted trend changes from `n̄^{-1/2}` (heuristic) to `n̄^{-1}` (derived), which is
+  distinguishable over a decade.
+- Fig. 4's caption now says explicitly that it plots the heuristic, and points to Table III.
+- The discussion's open problem changes from "find a law for T_C" to "extend the law beyond cavity
+  clocks".
+
+### New remark `rem:tcscope`: what this does *not* establish
+
+1. The mechanism is textbook (Schawlow–Townes + Egusquiza et al.); no new physics. What is new is that
+   the free parameter is eliminated.
+2. The amplitude must be *maintained*: a merely damped coherent state keeps its phase exactly, because
+   amplitude damping maps coherent states to coherent states. The noise belongs to the gain; in steady
+   state spontaneous photons enter at the loss rate, hence κ.
+3. It is not a discriminator by itself — the n̄⁻¹ and κ scalings are the standard ones. Falsifiability,
+   not uniqueness.
+4. The χ identification remains hopeless: `(χ/ω_s)² = 4e-8` smaller, `Γ ≈ 4e-5 s⁻¹`.
+
+### Code
+
+`src/qtime/clock_noise.py` (new), `tests/test_clock_noise.py` (9 checks), tests 158 → **167**.
+
 ## v13: the universal bound was false as stated — a real counterexample (2026-10-18)
 
 Auditing every analytic identity in the manuscript (new harness: `scripts/verify_claims.py`, 11
