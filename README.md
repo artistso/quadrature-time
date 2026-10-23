@@ -25,6 +25,7 @@ paper/quadrature_time.tex   revised REVTeX 4.2 manuscript (compiles)
 paper/quadrature_time.pdf   compiled manuscript (12 pp.)
 REVIEW.md                   referee-style review of the earlier draft
 NOTEBOOKLM_RESPONSE.md      point-by-point response to the NotebookLM critique
+HANDOFF.md                  status and instructions for the next working session
 CHANGES.md                  every change, old -> new, with reasons
 src/qtime/clocks.py         bipartite clock-system models, POVMs, conditioning
 src/qtime/interferometer.py relativistic / gravitational clock interferometers
